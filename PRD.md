@@ -3,9 +3,9 @@
 **Owner:** Shubham Puri  
 **Written:** October 6, 2026  
 **Status:** Ready to start  
-**Time:** about two weekends.
+**Time:** about two weekends, plus the PayPal add on (Phase 3B), which is also your **PayPal AI Hackathon entry, due Thursday November 12, 2026, 3:00 PM New York time**.
 
-A real help desk for your live Salon Booking Platform, built on Jira Service Management, with a help center, an AI triage helper and a response time dashboard.
+A real help desk for your live Salon Booking Platform, built on Jira Service Management, with a help center, an AI triage helper, an AI refund helper on PayPal, and a response time dashboard.
 
 (A sales demo video was planned as Part 2 and dropped on October 6, 2026. The existing YouTube demo of the Salon site already covers it.)
 
@@ -18,6 +18,8 @@ Your new non SWE resume is strong on customer contact but has one hole. Support,
 > "I built the booking platform for a real salon, then set up the help desk behind it, wrote the help articles, built a tool that sorts incoming tickets, and tracked how fast tickets got answered."
 
 That sentence covers the whole support job: intake, triage, answering, documentation, metrics, and feeding problems back to engineering.
+
+Phase 3B adds payments. When a customer writes "I was charged twice", an AI helper finds the payment in PayPal, works out what happened, and drafts the refund for you to approve. That is your PayPal AI Hackathon entry, and it ties to real refund handling you did at McDonald's.
 
 ## 2. What you will be able to say when it is done
 
@@ -35,6 +37,14 @@ Only claim what you actually finish. Fill every bracket with your real number.
 - Built a Python triage tool that reads new tickets through the Jira API and tags category and priority with an LLM, matching hand labels on [X] of [40] sample tickets
 - Tracked first response and resolution times in SQL and a dashboard, then turned the top repeat issue into a new help article
 
+**Hackathons section entry (after you submit):**
+
+**PayPal AI Hackathon**, right column: `November 2026 | Solo`
+
+- Built an AI refund helper for a salon help desk that finds a customer's payment in PayPal and drafts the refund for agent approval, matching [X] of [15] sample cases
+
+Write "Winner" or "Finalist" only if it is true. Add "PayPal REST API" and "Postman" to SKILLS once you have used them.
+
 **Honesty rule.** Until Phase 6 (go live) is done, the tickets are sample tickets you wrote. Say "sample tickets" on the resume and in interviews. After Phase 6, real customer questions flow in and you can say so.
 
 ## 3. Scope
@@ -50,12 +60,15 @@ Only claim what you actually finish. Fill every bracket with your real number.
 7. A weekly support report written from the data.
 8. README with screenshots and a 3 minute walkthrough video.
 9. Optional Phase 6: send the live Salon contact form into JSM.
+10. Phase 3B: an AI refund helper on the PayPal sandbox with human approval, a refund review page, a demo mode judges can run, and the hackathon submission.
 
 **Out of scope**
 
 - Building your own ticketing system. The point is to use the tool employers use.
 - Auto replying to customers with AI. Every customer facing reply is written or approved by you.
 - Paid plans or paid add ons.
+- Real money. PayPal work runs only in the sandbox, where money is fake.
+- Refunds without a human. The AI proposes, you approve.
 
 ## 4. The people involved
 
@@ -65,6 +78,8 @@ Only claim what you actually finish. Fill every bracket with your real number.
 | You, the support agent | Real | Answer tickets, link articles, escalate bugs |
 | The salon owner | Real | Gets escalations about her business. Must approve Phase 6 and anything shown on video |
 | Engineering (also you) | Real | Receives bug escalations as GitHub issues in the SalonWebsite repo |
+| Paying customers (Phase 3B) | Sample only, PayPal sandbox | Complain about double charges, cancellations and wrong amounts |
+| Hackathon judges | Real | Run your demo mode and watch your video |
 
 ## 5. Tools and cost
 
@@ -77,7 +92,12 @@ All free. Free tiers change, so confirm each one when you sign up.
 | Python 3.11+ | Scripts | Free |
 | Claude API (or Gemini API) | Triage labels | Pennies for 40 tickets on a small model such as Claude Haiku 4.5 (`claude-haiku-4-5-20251001`). Gemini has a free tier if you prefer $0 |
 | SQLite | Metrics database | Free, no setup |
-| Streamlit | Dashboard | Free |
+| Streamlit | Dashboard and refund review page | Free |
+| PayPal Developer sandbox | Fake payments and refunds (Phase 3B) | Free |
+| Postman | Testing API calls before coding them (Phase 3B); hackathon sponsor | Free plan |
+| PayPal Agent Toolkit (optional) | Ready made PayPal tools for an AI agent: orders, refunds, transactions | Free, open source |
+| AG Grid Community (optional) | Table for the refund review page; hackathon sponsor prize | Free, open source |
+| Render (optional) | Hosting a demo URL; hackathon sponsor prize | Free tier |
 
 **If the JSM Free plan is gone when you sign up**, use Zammad instead. It is free, open source, runs in Docker, and has a full REST API. Every phase below still applies; only the API calls change.
 
@@ -91,22 +111,32 @@ salon-support-desk/
   README.md              what it is, screenshots, how to run, walkthrough video link
   .env.example           names of the secrets (copy to .env, never commit .env)
   requirements.txt
+  LICENSE                MIT, added before the repo goes public (hackathon rule)
   data/
     tickets_seed.csv     40 sample tickets with your hand labels
+    payment_tickets.csv  15 payment tickets with your answer key (Phase 3B)
   kb/
     articles.md          drafts of every help article before you paste them into JSM
+    refund_policy.md     the sample refund rules the AI must follow (Phase 3B)
     index.csv            article id, title, url, category (used by triage)
   src/
     jsm.py               small API client (auth, get, post, paginate)
     seed_tickets.py      Phase 2: creates customers and tickets from the CSV
     triage.py            Phase 3: labels new tickets, writes an internal note
     eval_triage.py       Phase 3: compares bot labels with your hand labels
+    paypal.py            Phase 3B: token, look up a payment, refund (sandbox only)
+    seed_payments.py     Phase 3B: creates sample sandbox payments
+    refund_helper.py     Phase 3B: finds the payment, proposes, waits for approval, refunds
+    eval_refunds.py      Phase 3B: compares proposals with your answer key
+    review_app.py        Phase 3B: refund review page (Approve / Reject)
     export.py            Phase 4: pulls tickets, comments, SLAs into SQLite
     dashboard.py         Phase 4: Streamlit dashboard
     weekly_report.py     Phase 5: writes reports/week_YYYY_MM_DD.md
   sql/
     schema.sql
     metrics.sql
+  postman/
+    paypal_refund_helper.postman_collection.json   no secrets in it
   reports/
   screenshots/
 ```
@@ -125,6 +155,7 @@ Each phase ends with a **Done when** check. Do not move on until it passes.
    - Chat assistant (Iris) question
    - Confirmation email or text not received
    - Something is broken (bug report)
+   - Payment or refund (used in Phase 3B; add it now so it is ready)
 4. Set up **queues**: All open, Unassigned, Bugs, Waiting on customer, Breached or close to breaching.
 5. Set **response time goals**. Look under Project settings for **SLAs**. If you see it, set:
    - Time to first response: 4 hours
@@ -245,6 +276,67 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
 
 **Done when:** a new ticket gets labels plus an internal note within one run, invalid model output is caught, and `eval_triage.py` prints a real accuracy number.
 
+### Phase 3B. PayPal refund helper, your PayPal AI Hackathon entry (about 15 hours, Oct 19 to Nov 8)
+
+**Hackathon facts (official page and rules, read October 6, 2026)**
+
+- **Deadline:** Thursday November 12, 2026, 3:00 PM New York time (12:00 PM Pacific). Submit by November 10.
+- **Solo is fine.** Existing projects count if you make meaningful progress during the hackathon (October 1 to November 12). This repo started October 6, so all of it counts.
+- **Must use:** at least one PayPal API or product in the free sandbox, plus any AI tool or model. PayPal has to be central, not decoration.
+- **Must submit:** a text description, a working demo judges can run themselves (setup instructions in the repo or a hosted URL; mockups do not count), a list of the tools used and how, a public open source repo with the license showing in the About section, and a public YouTube video **under 3 minutes** with no copyrighted music.
+- **Judging, equally weighted:** technological implementation, design (a complete product experience, not just a proof of concept), potential impact (a real problem for a real audience), innovation, and presentation (the video: problem, who it is for, why it matters).
+- **Prizes worth aiming at:** Best Demo Delivery, Best Use of PayPal + AI, Best Use of Agentic Commerce ($5,000 each). Sponsor prizes such as AG Grid (1st $5,000, 2nd $2,000, three 3rd places at $1,000) and Render usually draw fewer entries.
+- **7,949 people had registered** by October 6. The page does not say how many submitted, and registrations usually far outnumber finished entries.
+
+**What it does, in one sentence for the judges.** When a salon customer writes in about a payment ("I was charged twice", "I cancelled, where is my refund?"), the helper finds the payment in PayPal, works out what happened against the refund policy, and drafts the exact refund and reply for the support agent, who approves it with one click. No money moves without a human.
+
+**Why the pitch works.** Small service businesses handle payment complaints by hand. It is slow, a wrong refund costs money, and a slow one costs the customer. The audience is real and specific: small businesses like the salon, and the person at the front desk handling refunds, a job you have done.
+
+#### Steps
+
+1. **PayPal developer setup (30 minutes).**
+   - Go to developer.paypal.com and log in or sign up. Open **Apps & Credentials**, keep the toggle on **Sandbox**, and click **Create App**.
+   - Copy the Client ID and Secret into `.env` as `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET`, and set `PAYPAL_BASE=https://api-m.sandbox.paypal.com`.
+   - Under **Sandbox accounts** you get a test business account (the salon) and a test personal account (a customer). Sandbox money is fake.
+2. **Try every call in Postman before coding it (1 hour).** Postman is a hackathon sponsor and fills a gap on your resume.
+   - Create a Postman environment with `client_id`, `client_secret` and `base_url` as variables, so no secret ever sits inside the collection.
+   - Build five requests: get a token (`POST /v1/oauth2/token`, basic auth with id and secret, body `grant_type=client_credentials`), create an order, capture it, look up the capture, and refund it.
+   - Export the collection to `postman/paypal_refund_helper.postman_collection.json` and commit it.
+3. **Write `src/paypal.py` (1 hour).** Functions: `token()`, `create_and_capture(...)`, `get_capture(capture_id)`, `refund(capture_id, amount=None, request_id=...)`. At the top, **refuse to run unless `PAYPAL_BASE` contains `sandbox`.** Cache the token until it expires.
+4. **Seed sample payments (2 hours), `src/seed_payments.py`.**
+   - Make about 15 sample customers, the same `@example.com` style as Phase 2, and pay for salon services. Use made up prices unless the owner says you may use hers.
+   - **Easy path:** create each order with intent `CAPTURE` and a card `payment_source`, using a test card number from PayPal's sandbox testing guide (developer.paypal.com, Sandbox testing). It completes in one step with no clicks.
+   - **Fallback**, if your sandbox app will not take cards: create the order, open its `approve` link, log in with the sandbox personal account, approve, then call `POST /v2/checkout/orders/{id}/capture`.
+   - Build these cases on purpose: 4 duplicate charges (same customer, same amount, minutes apart), 4 cancellations inside the refund window, 3 wrong amounts (charged for a longer service than booked), 2 already refunded (refund them in the script), and 2 that must NOT be refunded (one no-show outside policy, and one whose payment belongs to a different email).
+   - Save every payment in a SQLite table `payments(customer_email, order_id, capture_id, amount, service, created_at)`. This stands in for the salon's own booking database, which would store the PayPal ids.
+   - Send a `PayPal-Request-Id` on every create call, so rerunning the script can never charge twice.
+5. **Write the refund policy (30 minutes), `kb/refund_policy.md`.** A short sample policy, for example: duplicate charge, full refund; cancelled 24 or more hours ahead, full refund; wrong amount, refund the difference; no-show, no refund. Publish it as a help article too.
+6. **Write 15 payment tickets with your answer key (1 hour), `data/payment_tickets.csv`.**
+   ```
+   id,customer_name,customer_email,summary,description,expected_action,expected_amount,expected_capture_id
+   ```
+   `expected_action` is one of `refund_full`, `refund_partial`, `no_refund`, `ask_customer`. **Fill the answer key before you build step 7.** Load the tickets into JSM with your Phase 2 seed script, using the "Payment or refund" request type.
+7. **Build `src/refund_helper.py`, the core (6 to 8 hours).**
+   1. **Pick up** new "Payment or refund" tickets that have no `refund-proposed` label (filter on the request type in the JQL or in code).
+   2. **AI step 1, understand the claim.** Ask for JSON only: claim type (duplicate, cancelled, wrong_amount, other), the date and the amount the customer mentions. Validate it, same as Phase 3.
+   3. **Find the money.** Look up the customer's payments in the `payments` table by email, then confirm each one live with `GET /v2/payments/captures/{capture_id}` (status, amount, any refunds already made).
+   4. **AI step 2, propose.** Give the model the claim, the verified payments and the refund policy. JSON only: action, capture id, amount, a one line reason, and a draft reply to the customer.
+   5. **Guardrails in code, never skipped:** the capture exists and is `COMPLETED`; it belongs to the ticket's customer; the amount is no more than what is still refundable; it was not already refunded; the policy allows the action; the base URL is the sandbox. Any failure: label `needs-human` and an internal note saying which check failed.
+   6. **Propose.** Post an internal note (`public: false`) with the payment found, the amount, the reason and the draft reply. Add the label `refund-proposed`.
+   7. **Wait for you.** You review the note and add `refund-approved` or `refund-rejected` in JSM, or click Approve or Reject on the review page (step 10).
+   8. **Refund only after approval.** On the next run the helper sees `refund-approved`, runs the guardrails again, calls `POST /v2/payments/captures/{capture_id}/refund` with `PayPal-Request-Id` set to `<ticket key>-<capture id>` (so a retry can never refund twice), and posts an internal note with the refund id and status. You send the customer the draft reply yourself.
+   9. **Audit log.** Write every proposal, approval, rejection and refund to an `audit` table with a timestamp.
+   - **Optional, for "Best Use of Agentic Commerce":** PayPal's Agent Toolkit (Python) gives an AI agent ready made tools such as get order, create refund and list transactions. You can use it for the lookup and refund calls, but keep your own guardrail checks around it, because the toolkit's refund tool refunds whatever it is told to.
+8. **Measure it honestly (1 hour), `src/eval_refunds.py`.** Run steps 2 to 5 on the 15 tickets without writing anything. Compare with your answer key and print matched actions, matched amounts, and how many bad cases the guardrails stopped. This is the "[X] of 15" number. Same rule as Phase 3: never score a ticket you tuned the prompt on.
+9. **Make it runnable by judges (3 hours).** Judges cannot log into your Jira, so add `DEMO_MODE=1`:
+   - It reads tickets from `data/payment_tickets.csv` instead of JSM, and shows proposals and approvals on the review page instead of writing to JSM.
+   - It still calls the real PayPal sandbox and a real AI model, with the judge's own keys from `.env`.
+   - Add a "Run it in 5 minutes" section to the README: clone, add keys, `python src/seed_payments.py`, `streamlit run src/review_app.py`.
+   - Optional: host the review page on Render's free tier for a demo URL judges can open with no setup (Render is a sponsor prize).
+10. **Design the review page (3 hours), `src/review_app.py`.** "Design" is a judging criterion, so give the agent a real screen: a table of proposals (customer, what they claim, payment found, proposed amount, reason) with Approve and Reject buttons and the draft reply underneath. Streamlit is enough. Optional: build it in React with AG Grid's free Community edition to compete for the AG Grid prize.
+
+**Done when:** a "charged twice" ticket goes from arrival, to a proposal note, to your approval, to a real sandbox refund, to an internal note with the refund id; the guardrails stop both "must not refund" cases; demo mode runs from a fresh clone; and `eval_refunds.py` prints a real score.
+
 ### Phase 4. Metrics in SQL and a dashboard (about 6 hours)
 
 1. `sql/schema.sql`:
@@ -302,18 +394,28 @@ After this you can honestly say "real customer tickets" and "support for a live 
 
 - **Secrets:** `.env` stays out of git (it is already in `.gitignore`). Never paste a token into code, a screenshot or a video.
 - **Privacy:** sample data uses `@example.com`. Real customer data from Phase 6 never leaves JSM.
-- **AI never talks to customers.** It only writes internal notes and labels.
+- **AI never talks to customers and never moves money.** It only writes internal notes, labels and drafts. Every refund needs your approval.
+- **Sandbox only.** `src/paypal.py` refuses to run unless the base URL contains `sandbox`.
 - **Real numbers only.** Every number on the resume comes from your own export or eval run.
 - **Commit small and often,** one commit per working step, with a clear message.
 
 ## 9. Timeline
 
-| When | Phases |
+The hackathon deadline sets the order: Phases 0 to 3B come first, and Phases 4 and 5 move to after you submit.
+
+| When | Work |
 |---|---|
-| Weekend 1, day 1 | Phase 0 and Phase 1 |
-| Weekend 1, day 2 | Phase 2 seeding, start working tickets (finish over the week, about 10 a day) |
-| Weekend 2, day 1 | Phase 3 |
-| Weekend 2, day 2 | Phase 4 and Phase 5 |
+| Oct 7, 12:00 PM ET (optional) | Hackathon webinar: APIMatic context plugins |
+| Weekend Oct 10 to 11 | Phase 0 and Phase 1 |
+| Oct 11 to 18 | Phase 2: seed tickets, work about 10 a day |
+| Oct 12, 10:00 AM ET (optional) | Hackathon webinar: "Build a payments dashboard without building a dashboard" |
+| Weekend Oct 17 to 18 | Phase 3 |
+| Oct 19 to 25 | Phase 3B steps 1 to 6: PayPal setup, Postman, sample payments, policy, payment tickets |
+| Oct 26 to Nov 1 | Phase 3B steps 7 and 8: refund helper and its score |
+| Nov 2 to 8 | Phase 3B steps 9 and 10: demo mode and review page |
+| **Nov 9 to 10** | **Hackathon submission (section 12). Submit by Nov 10** |
+| **Nov 12, 3:00 PM ET** | **Hard deadline. Nothing is accepted after it** |
+| Nov 13 to 22 | Phase 4 and Phase 5 |
 | Later | Phase 6, after talking to the owner |
 
 ## 10. Risks and fallbacks
@@ -326,6 +428,10 @@ After this you can honestly say "real customer tickets" and "support for a live 
 | `raiseOnBehalfOf` errors | Add the customer to the service desk first (Phase 2, step 2) |
 | Triage accuracy is low | Report it honestly. Then improve the article list and category descriptions, and score again on held out tickets |
 | API search returns nothing | Check that the JQL works in the Jira search bar first, then copy it exactly |
+| Sandbox card payments are not enabled on your app | Use the approve link fallback in Phase 3B step 4 (about 20 minutes of clicks for 15 payments) |
+| A seed script reruns and charges twice | Every create and refund call sends a `PayPal-Request-Id`; a retry reuses the same id |
+| The AI proposes a wrong refund | The code guardrails block it first; anything that fails a check becomes `needs-human` |
+| Falling behind before Nov 12 | Cut in this order: AG Grid, Render hosting, the review page (approve with Jira labels instead). Never cut demo mode, the README or the video |
 
 ## 11. API cheat sheet
 
@@ -344,4 +450,44 @@ All calls use basic auth with your email and API token. Base URL is your site.
 | Edit labels, priority | `PUT /rest/api/3/issue/{key}` |
 | Search help articles | `GET /rest/servicedeskapi/knowledgebase/article?query=...` (if it errors, match against `kb/index.csv` instead) |
 
-Official docs: developer.atlassian.com, then Jira Service Management Cloud REST API, and Jira Cloud platform REST API v3.
+**PayPal, sandbox base URL `https://api-m.sandbox.paypal.com`:**
+
+| Purpose | Call |
+|---|---|
+| Get an access token | `POST /v1/oauth2/token`, basic auth with client id and secret, body `grant_type=client_credentials` |
+| Create an order | `POST /v2/checkout/orders` (intent `CAPTURE`; with a card `payment_source` it completes in one step) |
+| Capture an approved order | `POST /v2/checkout/orders/{order_id}/capture` |
+| Look up a payment | `GET /v2/payments/captures/{capture_id}` |
+| Refund (full: empty body; partial: send `amount`) | `POST /v2/payments/captures/{capture_id}/refund` with header `PayPal-Request-Id` |
+| Look up a refund | `GET /v2/payments/refunds/{refund_id}` |
+
+PayPal docs: developer.paypal.com (Orders v2, Payments v2, Sandbox testing guide, Agent Toolkit).
+
+Atlassian docs: developer.atlassian.com, then Jira Service Management Cloud REST API, and Jira Cloud platform REST API v3.
+
+## 12. Hackathon submission checklist (November 9 to 10)
+
+**Due Thursday November 12, 2026, 3:00 PM New York time. Aim to submit by November 10.**
+
+1. **Secret check before anything goes public.**
+   - Search the whole history: `git log -p | findstr /i "secret token client_id api_key sk-"`.
+   - Confirm `.env` was never committed: `git log --all -- .env` must print nothing.
+   - If a key ever appeared in a commit, revoke it and make a new one. Deleting the line is not enough, because history keeps it.
+2. **Add the license.** Put an MIT `LICENSE` file in the repo root. After pushing, check that GitHub shows "MIT license" in the About box on the right. That is a hackathon rule.
+3. **Create the public GitHub repo and push.** Tell Claude when you are ready. It will not create or publish a repo without your OK.
+4. **README for judges:**
+   - the problem and who it is for (small service businesses and the person handling refunds);
+   - how it works, with a diagram (ticket, then AI claim reading, then PayPal lookup, then guardrails, then proposal, then human approval, then refund);
+   - which PayPal APIs are used and why, and which AI model and why;
+   - the guardrails;
+   - your eval results;
+   - "Run it in 5 minutes" (demo mode);
+   - the tools list, including Postman and Render if you used them.
+5. **Demo video, under 3 minutes**, public on YouTube, no copyrighted music, showing it working end to end:
+   - 0:00 to 0:20, the problem: a small salon handles payment complaints by hand.
+   - 0:20 to 2:10, the demo: a "charged twice" ticket arrives; the helper finds the payment in PayPal; the proposal and reason appear; you approve; the refund shows up in the PayPal sandbox; you send the drafted reply. Then show one blocked case, such as a payment that belongs to someone else.
+   - 2:10 to 2:45, the guardrails and your eval numbers.
+   - 2:45 to 2:55, who it is for and what comes next.
+   - Record with OBS Studio (free). Practice twice and speak in your own words.
+6. **Devpost form:** text description, the tools and how each one was used, the repo link, the video link, and the demo instructions or hosted URL.
+7. **After submitting:** send Claude the Devpost link, your eval score and the video link. The Hackathons section and the project bullets get updated with your real numbers.
