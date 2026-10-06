@@ -21,11 +21,11 @@ That sentence covers the whole support job: intake, triage, answering, documenta
 
 ## 2. What you will be able to say when it is done
 
-**On the resume right now (added October 6, 2026, before the build started):** "Salon Support Desk (In Progress)" on the non SWE base, with three present tense bullets ("Setting up...", "Building...", "Tracking..."), no numbers, and no Jira on the SKILLS line. If a recruiter asks, describe exactly what is built so far. As each phase finishes, send Claude the result and the bullets move to the finished versions below.
+**On the resume right now (added October 6, 2026, before the build started):** "Salon Support Desk" on the non SWE base, with three present tense bullets ("Setting up...", "Building...", "Tracking...") and no numbers. Present tense is what keeps it honest while you build, so do not change it to past tense until a phase is done. If a recruiter asks, describe exactly what is built so far. As each phase finishes, send Claude the result and the bullets move to the finished versions below. ("Jira" is already on the SKILLS line from your Mouse Squad help desk work.)
 
 Only claim what you actually finish. Fill every bracket with your real number.
 
-**New skills you can list honestly:** Jira Service Management, ticketing, SLAs, knowledge base, REST APIs, SQL, Streamlit. Add Confluence only if you end up working in Confluence directly.
+**New skills you can list honestly once you have used them:** Jira Service Management (the product; plain "Jira" is already on your resume), ticketing, SLAs, knowledge base, REST APIs, SQL, Streamlit. Add Confluence only if you end up working in Confluence directly.
 
 **Resume entry (Projects section, non SWE base):**
 
