@@ -3,16 +3,13 @@
 **Owner:** Shubham Puri  
 **Written:** October 6, 2026  
 **Status:** Ready to start  
-**Time:** Part 1 is about two weekends. Part 2 is one evening.
+**Time:** about two weekends.
 
-This document has two parts:
+A real help desk for your live Salon Booking Platform, built on Jira Service Management, with a help center, an AI triage helper and a response time dashboard.
 
-- **Part 1, Salon Support Desk.** A real help desk for your live Salon Booking Platform, built on Jira Service Management, with a help center, an AI triage helper and a response time dashboard.
-- **Part 2, Salon sales demo video.** A 5 minute video that pitches the Salon platform to a business owner the way a solutions engineer would.
+(A sales demo video was planned as Part 2 and dropped on October 6, 2026. The existing YouTube demo of the Salon site already covers it.)
 
 ---
-
-# Part 1: Salon Support Desk
 
 ## 1. Why this project
 
@@ -23,6 +20,8 @@ Your new non SWE resume is strong on customer contact but has one hole. Support,
 That sentence covers the whole support job: intake, triage, answering, documentation, metrics, and feeding problems back to engineering.
 
 ## 2. What you will be able to say when it is done
+
+**On the resume right now (added October 6, 2026, before the build started):** "Salon Support Desk (In Progress)" on the non SWE base, with three present tense bullets ("Setting up...", "Building...", "Tracking..."), no numbers, and no Jira on the SKILLS line. If a recruiter asks, describe exactly what is built so far. As each phase finishes, send Claude the result and the bullets move to the finished versions below.
 
 Only claim what you actually finish. Fill every bracket with your real number.
 
@@ -282,7 +281,7 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
 1. Take the top repeat issue from the metrics, write the missing help article, and note in the README which ticket data led to it. This is the "turned the top repeat issue into a new help article" bullet.
 2. `src/weekly_report.py` writes `reports/week_YYYY_MM_DD.md` in plain language: what came in, how fast it was answered, what keeps repeating, and what to fix in the product. This is the kind of note a TAM or customer success person sends every week.
 3. README: one paragraph on what it is, an architecture sketch (JSM → triage script → JSM; JSM → export → SQLite → dashboard), 4 screenshots (portal, queue, internal note, dashboard), how to run it, and the results table with your real numbers.
-4. Record a 3 minute walkthrough (see Part 2 for recording tips) and link it in the README.
+4. Record a 3 minute walkthrough (OBS Studio is free, or Loom's free plan, which caps recordings at 5 minutes) and link it in the README. Show only sample data, never a token.
 5. Tell Claude your final numbers, and the project goes onto the non SWE base resume.
 
 **Done when:** the README alone explains the project to a hiring manager in 2 minutes.
@@ -346,51 +345,3 @@ All calls use basic auth with your email and API token. Base URL is your site.
 | Search help articles | `GET /rest/servicedeskapi/knowledgebase/article?query=...` (if it errors, match against `kb/index.csv` instead) |
 
 Official docs: developer.atlassian.com, then Jira Service Management Cloud REST API, and Jira Cloud platform REST API v3.
-
----
-
-# Part 2: Salon sales demo video
-
-**Goal:** a 5 minute video where you pitch the Salon platform to a small business owner the way a solutions engineer runs a demo. Solutions engineer hiring managers ask for demos, and a recorded one is proof you can explain technology to a non technical buyer.
-
-**This is not a build walkthrough.** If your current Salon demo shows code or how you built it, keep that one for the SWE resume. This one never shows code.
-
-## Before you record (about 1 hour)
-
-1. **Ask the salon owner** whether you may show the live site and admin page. If not, use a test booking and blur anything real.
-2. **Hide real customer data.** Make 2 or 3 test bookings under fake names and only show those.
-3. Use OBS Studio (free, no time limit), or Loom's free plan (it caps recordings at 5 minutes, which suits this). Trim with Clipchamp, which comes with Windows 11.
-4. Use a real microphone or earbuds, close other tabs, and turn off notifications.
-5. Practice the script out loud twice. Say it in your own words; do not read it.
-
-## Script (about 5 minutes)
-
-**1. Opening, 20 seconds.** "Hi, I'm Shubham. This is the booking platform I built for a neighborhood salon. I'll show you how it takes bookings when nobody is at the front desk."
-
-**2. The customer's problem, 45 seconds.** Tell the discovery story in plain words. The owner ran every booking on pen and paper, had no way to take bookings online, and people could not find the salon online. You sat down with her and worked out what she actually needed. Then say what she cared about: bookings coming in without her answering the phone, and being findable.
-
-**3. Live demo, 2 minutes 30 seconds.** Follow the customer, not the code.
-   - On a phone screen: find the salon on Google Maps, open the site, pick a service and stylist, and book.
-   - Open the chat assistant and ask it to reschedule. Point out that it answers questions about services and hours at 11pm, when the salon is closed.
-   - Show the tap through menu: if a customer does not want to type, or the AI is off, they can still book.
-   - Owner side: show the booking arriving (the email notification and the admin view).
-
-**4. Two objections, 1 minute.** Ask each question out loud, then answer it.
-   - "My customers aren't techy." The tap through menu works without typing, and the chat answers in plain language.
-   - "What if the AI books something wrong?" Every action the assistant proposes is checked before anything is saved, and the assistant cannot make up prices or times. The owner sees every booking.
-
-**5. Close, 20 seconds.** What it changed: the salon is on Google Maps with a real website, bringing in bookings and walk ins from people who could not find it before. End with a next step: "If you run a small business that still books by phone, I'd set up the same thing for you."
-
-## Do not say
-
-- Any booking count, launch date or revenue number. None are confirmed.
-- "Cut booking from 7 steps to 3" or anything implying an older system existed. It was built from scratch.
-- Any price for the service.
-
-## After recording
-
-1. Upload it to YouTube as **Unlisted**, titled "Salon Booking Platform, customer demo".
-2. Send Claude the link. On the **non SWE base resume**, the Salon "Demo" link switches to this video. The SWE resume keeps the current one.
-3. Optional: post it on LinkedIn with 3 lines about the problem, the fix and what changed for the owner.
-
-**Done when:** the video is under 5 minutes, shows no code and no real customer data, and the link is on the non SWE resume.
