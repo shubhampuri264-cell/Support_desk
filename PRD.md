@@ -60,7 +60,7 @@ Write "Winner" or "Finalist" only if it is true. Add "PayPal REST API" and "Post
 7. A weekly support report written from the data.
 8. README with screenshots and a 3 minute walkthrough video.
 9. Optional Phase 6: send the live Salon contact form into JSM.
-10. Phase 3B: an AI refund helper on the PayPal sandbox with human approval, a refund review page, a demo mode judges can run, and the hackathon submission.
+10. Phase 3B: an AI refund helper on the PayPal sandbox with human approval, a refund review page, a hosted demo judges can open without any keys of their own (plus a local demo mode as a backup), and the hackathon submission.
 
 **Out of scope**
 
@@ -94,10 +94,10 @@ All free. Free tiers change, so confirm each one when you sign up.
 | SQLite | Metrics database | Free, no setup |
 | Streamlit | Dashboard and refund review page | Free |
 | PayPal Developer sandbox | Fake payments and refunds (Phase 3B) | Free |
-| Postman | Testing API calls before coding them (Phase 3B); hackathon sponsor | Free plan |
+| Postman | Testing API calls before coding them (Phase 3B); hackathon sponsor tool, no prize of its own | Free plan |
 | PayPal Agent Toolkit (optional) | Ready made PayPal tools for an AI agent: orders, refunds, transactions | Free, open source |
-| AG Grid Community (optional) | Table for the refund review page; hackathon sponsor prize | Free, open source |
-| Render (optional) | Hosting a demo URL; hackathon sponsor prize | Free tier |
+| AG Grid Community (optional) | Table for the refund review page. Does not target the AG Grid prize, which requires AG Grid Studio (see Phase 3B) | Free, open source |
+| Render | Hosting the judges' demo URL (Phase 3B step 9); sponsor prize paid in Render credits | Free tier, plus $50 hackathon credits |
 
 **If the JSM Free plan is gone when you sign up**, use Zammad instead. It is free, open source, runs in Docker, and has a full REST API. Every phase below still applies; only the API calls change.
 
@@ -111,7 +111,9 @@ salon-support-desk/
   README.md              what it is, screenshots, how to run, walkthrough video link
   .env.example           names of the secrets (copy to .env, never commit .env)
   requirements.txt
-  LICENSE                MIT, added before the repo goes public (hackathon rule)
+  LICENSE                MIT; the repo is already public, so add it now (hackathon rule)
+  docs/
+    hackathon-rules.md   summary of the official hackathon rules and what they mean for this entry
   data/
     tickets_seed.csv     40 sample tickets with your hand labels
     payment_tickets.csv  15 payment tickets with your answer key (Phase 3B)
@@ -276,17 +278,21 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
 
 **Done when:** a new ticket gets labels plus an internal note within one run, invalid model output is caught, and `eval_triage.py` prints a real accuracy number.
 
-### Phase 3B. PayPal refund helper, your PayPal AI Hackathon entry (about 15 hours, Oct 19 to Nov 8)
+### Phase 3B. PayPal refund helper, your PayPal AI Hackathon entry (about 16 hours, Oct 19 to Nov 8)
 
-**Hackathon facts (official page and rules, read October 6, 2026)**
+**Hackathon facts (official page and rules, read October 6, 2026).** The full breakdown, with sources, is in `docs/hackathon-rules.md`.
 
-- **Deadline:** Thursday November 12, 2026, 3:00 PM New York time (12:00 PM Pacific). Submit by November 10.
-- **Solo is fine.** Existing projects count if you make meaningful progress during the hackathon (October 1 to November 12). This repo started October 6, so all of it counts.
-- **Must use:** at least one PayPal API or product in the free sandbox, plus any AI tool or model. PayPal has to be central, not decoration.
-- **Must submit:** a text description, a working demo judges can run themselves (setup instructions in the repo or a hosted URL; mockups do not count), a list of the tools used and how, a public open source repo with the license showing in the About section, and a public YouTube video **under 3 minutes** with no copyrighted music.
+- **Deadline:** Thursday November 12, 2026, 3:00 PM New York time (12:00 PM Pacific). Submit by November 10. Drafts can be edited until the deadline; nothing can change after it.
+- **Solo is fine.** Existing projects count if you make meaningful progress during the hackathon (October 1 to November 12). This repo started October 6, so all of it counts. Say so in the submission.
+- **Must use:** at least one PayPal API or product in the free sandbox, plus any AI tool or model. PayPal has to be central, not decoration. Stage one of judging is pass/fail on exactly this.
+- **Must submit:** a text description, a working demo judges can run themselves (setup instructions in the repo or a hosted URL; mockups do not count), a list of the tools used and how, a public open source repo with the license detected and shown at the top of the repo page, and a public YouTube video **under 3 minutes** with no copyrighted music or third-party trademarks.
+- **Free testing access until December 15.** The project must be available to judges "free of charge and without any restriction" until judging ends. Judges therefore cannot be required to bring their own paid AI key, which is why step 9 hosts the demo with our own keys.
 - **Judging, equally weighted:** technological implementation, design (a complete product experience, not just a proof of concept), potential impact (a real problem for a real audience), innovation, and presentation (the video: problem, who it is for, why it matters).
-- **Prizes worth aiming at:** Best Demo Delivery, Best Use of PayPal + AI, Best Use of Agentic Commerce ($5,000 each). Sponsor prizes such as AG Grid (1st $5,000, 2nd $2,000, three 3rd places at $1,000) and Render usually draw fewer entries.
-- **7,949 people had registered** by October 6. The page does not say how many submitted, and registrations usually far outnumber finished entries.
+- **Prize groups:** Grand ($12,000 / $8,000 / $5,000), Honorable Mention ($5,000 each: Most Creative, Most Impactful, Best Demo Delivery, Best Use of PayPal + AI, Best Use of Agentic Commerce), and Sponsor prizes. **A project can win at most one Grand Prize and one Sponsor Prize, or one Honorable Mention and one Sponsor Prize.**
+- **Our prize targets:** one Honorable Mention (Best Use of PayPal + AI, or Best Demo Delivery) plus the Render sponsor prize, which our hosted demo enters at no extra cost. A Grand Prize is the stretch goal.
+- **Skip the AG Grid prize.** It is judged on AG Grid Studio (a React boilerplate with a 45 day trial license and the Studio Agent Framework), and judges want custom widgets and theming, "not just AG Grid or AG Charts on their own." That is a separate project. The Render prize is paid in credits only ($1,000 / $750 / $500). Postman has no prize.
+- **AI coding assistants:** the rules do not mention them. The submission must be your original work, and prizes are paid only after PayPal verifies your role in building it. Make the design decisions yourself, be able to explain every part, and list every tool honestly in the submission.
+- **8,070 people had registered** by October 6. The page does not say how many submitted, and registrations usually far outnumber finished entries.
 
 **What it does, in one sentence for the judges.** When a salon customer writes in about a payment ("I was charged twice", "I cancelled, where is my refund?"), the helper finds the payment in PayPal, works out what happened against the refund policy, and drafts the exact refund and reply for the support agent, who approves it with one click. No money moves without a human.
 
@@ -298,7 +304,7 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
    - Go to developer.paypal.com and log in or sign up. Open **Apps & Credentials**, keep the toggle on **Sandbox**, and click **Create App**.
    - Copy the Client ID and Secret into `.env` as `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET`, and set `PAYPAL_BASE=https://api-m.sandbox.paypal.com`.
    - Under **Sandbox accounts** you get a test business account (the salon) and a test personal account (a customer). Sandbox money is fake.
-2. **Try every call in Postman before coding it (1 hour).** Postman is a hackathon sponsor and fills a gap on your resume.
+2. **Try every call in Postman before coding it (1 hour).** Postman is a hackathon sponsor tool (it has no prize of its own) and fills a gap on your resume.
    - Create a Postman environment with `client_id`, `client_secret` and `base_url` as variables, so no secret ever sits inside the collection.
    - Build five requests: get a token (`POST /v1/oauth2/token`, basic auth with id and secret, body `grant_type=client_credentials`), create an order, capture it, look up the capture, and refund it.
    - Export the collection to `postman/paypal_refund_helper.postman_collection.json` and commit it.
@@ -328,14 +334,15 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
    9. **Audit log.** Write every proposal, approval, rejection and refund to an `audit` table with a timestamp.
    - **Optional, for "Best Use of Agentic Commerce":** PayPal's Agent Toolkit (Python) gives an AI agent ready made tools such as get order, create refund and list transactions. You can use it for the lookup and refund calls, but keep your own guardrail checks around it, because the toolkit's refund tool refunds whatever it is told to.
 8. **Measure it honestly (1 hour), `src/eval_refunds.py`.** Run steps 2 to 5 on the 15 tickets without writing anything. Compare with your answer key and print matched actions, matched amounts, and how many bad cases the guardrails stopped. This is the "[X] of 15" number. Same rule as Phase 3: never score a ticket you tuned the prompt on.
-9. **Make it runnable by judges (3 hours).** Judges cannot log into your Jira, so add `DEMO_MODE=1`:
-   - It reads tickets from `data/payment_tickets.csv` instead of JSM, and shows proposals and approvals on the review page instead of writing to JSM.
-   - It still calls the real PayPal sandbox and a real AI model, with the judge's own keys from `.env`.
-   - Add a "Run it in 5 minutes" section to the README: clone, add keys, `python src/seed_payments.py`, `streamlit run src/review_app.py`.
-   - Optional: host the review page on Render's free tier for a demo URL judges can open with no setup (Render is a sponsor prize).
-10. **Design the review page (3 hours), `src/review_app.py`.** "Design" is a judging criterion, so give the agent a real screen: a table of proposals (customer, what they claim, payment found, proposed amount, reason) with Approve and Reject buttons and the draft reply underneath. Streamlit is enough. Optional: build it in React with AG Grid's free Community edition to compete for the AG Grid prize.
+9. **Make it runnable by judges (4 hours).** Judges cannot log into your Jira, and the rules say the project must be available to them free of charge and without restriction, so they cannot be asked to bring their own paid AI key. Add `DEMO_MODE=1` and host it:
+   - Demo mode reads tickets from `data/payment_tickets.csv` instead of JSM, and shows proposals and approvals on the review page instead of writing to JSM.
+   - It still calls the real PayPal sandbox and a real AI model.
+   - **Primary: a hosted demo on Render.** Deploy the review page with your own sandbox and model keys set as Render environment variables (never in the repo). Claim the $50 hackathon credits. Set a monthly spend limit on the model API key. Add a "Reset demo" button that reseeds the sample payments, so every judge starts from the same state. The free tier sleeps when idle and takes about a minute to wake, so either say so on the page or use the credits for an always-on instance.
+   - **Keep it live until judging ends on December 15**, and check it once a week until then.
+   - **Backup: run it locally.** Add a "Run it in 5 minutes" section to the README: clone, add your own keys, `python src/seed_payments.py`, `streamlit run src/review_app.py`. Name a free model option (for example the Gemini free tier) so a local run can also cost nothing.
+10. **Design the review page (3 hours), `src/review_app.py`.** "Design" is a judging criterion, so give the agent a real screen: a table of proposals (customer, what they claim, payment found, proposed amount, reason) with Approve and Reject buttons and the draft reply underneath. Streamlit is enough. AG Grid's free Community edition can be used for the table, but it does not compete for the AG Grid prize, which is judged on AG Grid Studio.
 
-**Done when:** a "charged twice" ticket goes from arrival, to a proposal note, to your approval, to a real sandbox refund, to an internal note with the refund id; the guardrails stop both "must not refund" cases; demo mode runs from a fresh clone; and `eval_refunds.py` prints a real score.
+**Done when:** a "charged twice" ticket goes from arrival, to a proposal note, to your approval, to a real sandbox refund, to an internal note with the refund id; the guardrails stop both "must not refund" cases; the hosted demo URL works end to end in a logged-out browser window; demo mode also runs from a fresh clone; and `eval_refunds.py` prints a real score.
 
 ### Phase 4. Metrics in SQL and a dashboard (about 6 hours)
 
@@ -412,10 +419,12 @@ The hackathon deadline sets the order: Phases 0 to 3B come first, and Phases 4 a
 | Weekend Oct 17 to 18 | Phase 3 |
 | Oct 19 to 25 | Phase 3B steps 1 to 6: PayPal setup, Postman, sample payments, policy, payment tickets |
 | Oct 26 to Nov 1 | Phase 3B steps 7 and 8: refund helper and its score |
-| Nov 2 to 8 | Phase 3B steps 9 and 10: demo mode and review page |
+| Nov 2 to 8 | Phase 3B steps 9 and 10: demo mode, review page, and the hosted demo on Render |
 | **Nov 9 to 10** | **Hackathon submission (section 12). Submit by Nov 10** |
 | **Nov 12, 3:00 PM ET** | **Hard deadline. Nothing is accepted after it** |
 | Nov 13 to 22 | Phase 4 and Phase 5 |
+| Nov 12 to Dec 15 | Keep the hosted demo live and funded; check it weekly. Judging runs Dec 1 to 15 |
+| Around Dec 21 | Winners announced |
 | Later | Phase 6, after talking to the owner |
 
 ## 10. Risks and fallbacks
@@ -431,7 +440,8 @@ The hackathon deadline sets the order: Phases 0 to 3B come first, and Phases 4 a
 | Sandbox card payments are not enabled on your app | Use the approve link fallback in Phase 3B step 4 (about 20 minutes of clicks for 15 payments) |
 | A seed script reruns and charges twice | Every create and refund call sends a `PayPal-Request-Id`; a retry reuses the same id |
 | The AI proposes a wrong refund | The code guardrails block it first; anything that fails a check becomes `needs-human` |
-| Falling behind before Nov 12 | Cut in this order: AG Grid, Render hosting, the review page (approve with Jira labels instead). Never cut demo mode, the README or the video |
+| Falling behind before Nov 12 | Cut in this order: review page polish (keep a plain Streamlit table with Approve and Reject), the Reset demo button, the Postman collection. Never cut demo mode, the hosted demo, the README or the video |
+| Hosted demo goes down or runs out of model credit during judging | Spend limit and weekly checks from Phase 3B step 9; the README's local setup is the backup |
 
 ## 11. API cheat sheet
 
@@ -481,13 +491,15 @@ Atlassian docs: developer.atlassian.com, then Jira Service Management Cloud REST
    - which PayPal APIs are used and why, and which AI model and why;
    - the guardrails;
    - your eval results;
-   - "Run it in 5 minutes" (demo mode);
-   - the tools list, including Postman and Render if you used them.
+   - the hosted demo URL at the top, then "Run it in 5 minutes" (demo mode) as the backup;
+   - the tools list, including Postman, Render and any AI coding assistant you used, and how each one was used.
 5. **Demo video, under 3 minutes**, public on YouTube, no copyrighted music, showing it working end to end:
    - 0:00 to 0:20, the problem: a small salon handles payment complaints by hand.
    - 0:20 to 2:10, the demo: a "charged twice" ticket arrives; the helper finds the payment in PayPal; the proposal and reason appear; you approve; the refund shows up in the PayPal sandbox; you send the drafted reply. Then show one blocked case, such as a payment that belongs to someone else.
    - 2:10 to 2:45, the guardrails and your eval numbers.
    - 2:45 to 2:55, who it is for and what comes next.
+   - Keep the video on your own screens (the review page and the PayPal sandbox). Keep third-party product screens such as Jira to a minimum, because the rules bar third-party trademarks without permission.
    - Record with OBS Studio (free). Practice twice and speak in your own words.
-6. **Devpost form:** text description, the tools and how each one was used, the repo link, the video link, and the demo instructions or hosted URL.
-7. **After submitting:** send Claude the Devpost link, your eval score and the video link. The Hackathons section and the project bullets get updated with your real numbers.
+6. **Devpost form:** text description, the tools and how each one was used, the repo link, the video link, the hosted demo URL, and the local setup instructions. State that the repo was started on October 6, 2026, after the submission period opened.
+7. **Before you press submit:** open the hosted demo in a logged-out browser window and run one full case, and check that GitHub shows the license at the top of the repo page.
+8. **After submitting:** send Claude the Devpost link, your eval score and the video link. The Hackathons section and the project bullets get updated with your real numbers. Keep the hosted demo live until December 15.
