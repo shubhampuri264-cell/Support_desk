@@ -128,9 +128,10 @@ Support is available in the PayPal Discord (discord.gg/sJ2G6DyvSK) and through t
 1. **Hosted demo on Render.** Judges cannot be required to bring their own paid AI keys, so the review page runs on Render with our sandbox and model keys, and stays live until December 15. The local "run it in 5 minutes" setup remains as a backup.
 2. **Prize targets.** One Honorable Mention (Best Use of PayPal + AI, or Best Demo Delivery) plus the Render sponsor prize. A Grand Prize is the stretch goal.
 3. **Skip the AG Grid prize.** It needs AG Grid Studio and a polished React dashboard, which is outside our time budget.
-4. **Keep the video on our own screens.** Show the review page and the PayPal sandbox, and keep third-party product screens such as Jira to a minimum.
+4. **Keep the video on our own screens.** Show our refund desk app and the PayPal sandbox only.
 5. **License.** The MIT license was added on October 6. Confirm that GitHub still shows it at the top of the repository page before submitting.
 6. **State the timeline in the submission.** The repository started on October 6, after the submission period opened.
+7. **Use a made-up business.** The salon takes no online payments and the owner does not want to add them (October 7), so the refund desk is shown on a made-up business. That keeps the salon's name out of the demo and the video, and the submission says plainly that the business and its customers are sample data.
 
 ## Sources
 
