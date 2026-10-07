@@ -129,7 +129,7 @@ Support is available in the PayPal Discord (discord.gg/sJ2G6DyvSK) and through t
 2. **Prize targets.** One Honorable Mention (Best Use of PayPal + AI, or Best Demo Delivery) plus the Render sponsor prize. A Grand Prize is the stretch goal.
 3. **Skip the AG Grid prize.** It needs AG Grid Studio and a polished React dashboard, which is outside our time budget.
 4. **Keep the video on our own screens.** Show the review page and the PayPal sandbox, and keep third-party product screens such as Jira to a minimum.
-5. **Add the license now.** The repository is already public, and the license must be visible before submission.
+5. **License.** The MIT license was added on October 6. Confirm that GitHub still shows it at the top of the repository page before submitting.
 6. **State the timeline in the submission.** The repository started on October 6, after the submission period opened.
 
 ## Sources
