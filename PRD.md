@@ -2,8 +2,8 @@
 
 **Owner:** Shubham Puri  
 **Written:** October 6, 2026  
-**Status:** Ready to start  
-**Time:** about two weekends, plus the PayPal add on (Phase 3B), which is also your **PayPal AI Hackathon entry, due Thursday November 12, 2026, 3:00 PM New York time**.
+**Status:** Final, ready to build  
+**Time:** about 46 hours in total: about 25 hours for the help desk (Phases 0 to 5) and about 21 hours for the PayPal add on (Phase 3B), which is also your **PayPal AI Hackathon entry, due Thursday November 12, 2026, 3:00 PM New York time**.
 
 A real help desk for your live Salon Booking Platform, built on Jira Service Management, with a help center, an AI triage helper, an AI refund helper on PayPal, and a response time dashboard.
 
@@ -95,7 +95,7 @@ All free. Free tiers change, so confirm each one when you sign up.
 | Streamlit | Dashboard and refund review page | Free |
 | PayPal Developer sandbox | Fake payments and refunds (Phase 3B) | Free |
 | Postman | Testing API calls before coding them (Phase 3B); hackathon sponsor tool, no prize of its own | Free plan |
-| PayPal Agent Toolkit (optional) | Ready made PayPal tools for an AI agent: orders, refunds, transactions | Free, open source |
+| PayPal AI Toolkit (optional) | Ready made PayPal tools for an AI agent through an MCP server: orders, refunds, disputes, transactions (github.com/paypal/AI-Toolkit) | Free, open source |
 | AG Grid Community (optional) | Table for the refund review page. Does not target the AG Grid prize, which requires AG Grid Studio (see Phase 3B) | Free, open source |
 | Render | Hosting the judges' demo URL (Phase 3B step 9); sponsor prize paid in Render credits | Free tier, plus $50 hackathon credits |
 
@@ -116,18 +116,18 @@ salon-support-desk/
     hackathon-rules.md   summary of the official hackathon rules and what they mean for this entry
   data/
     tickets_seed.csv     40 sample tickets with your hand labels
-    payment_tickets.csv  15 payment tickets with your answer key (Phase 3B)
+    payment_tickets.csv  15 payment tickets with your answer key, keyed by case id (Phase 3B)
   kb/
     articles.md          drafts of every help article before you paste them into JSM
     refund_policy.md     the sample refund rules the AI must follow (Phase 3B)
     index.csv            article id, title, url, category (used by triage)
   src/
     jsm.py               small API client (auth, get, post, paginate)
-    seed_tickets.py      Phase 2: creates customers and tickets from the CSV
+    seed_tickets.py      Phase 2: creates customers and tickets from a CSV (--csv picks the file)
     triage.py            Phase 3: labels new tickets, writes an internal note
     eval_triage.py       Phase 3: compares bot labels with your hand labels
     paypal.py            Phase 3B: token, look up a payment, refund (sandbox only)
-    seed_payments.py     Phase 3B: creates sample sandbox payments
+    seed_payments.py     Phase 3B: creates sample bookings and sandbox payments
     refund_helper.py     Phase 3B: finds the payment, proposes, waits for approval, refunds
     eval_refunds.py      Phase 3B: compares proposals with your answer key
     review_app.py        Phase 3B: refund review page (Approve / Reject)
@@ -150,13 +150,14 @@ Each phase ends with a **Done when** check. Do not move on until it passes.
 ### Phase 0. Setup (about 2 hours)
 
 1. Go to atlassian.com, choose Jira Service Management, and sign up for the **Free** plan with your own email. Pick a site name such as `spuri-support`. Your site URL becomes `https://spuri-support.atlassian.net`.
-2. Create a project from the **Customer service** template (not IT service management). Name it `Salon Support`, key `SUP`.
-3. Set up **request types** (Project settings, Request types). Use these five and give each a one line description customers will see:
+2. Create a project from the **Customer service** template (not IT service management). Name it `Salon Support`, key `SUP`. If the Free plan does not offer a Customer service template, use **General service management**; every step below still applies.
+3. Set up **request types** (Project settings, Request types). Use these seven and give each a one line description customers will see. Delete or hide any default request types the template adds.
    - Booking problem
    - Reschedule or cancel
    - Chat assistant (Iris) question
    - Confirmation email or text not received
    - Something is broken (bug report)
+   - General question (hours, location, prices and anything else)
    - Payment or refund (used in Phase 3B; add it now so it is ready)
 4. Set up **queues**: All open, Unassigned, Bugs, Waiting on customer, Breached or close to breaching.
 5. Set **response time goals**. Look under Project settings for **SLAs**. If you see it, set:
@@ -191,9 +192,10 @@ Each phase ends with a **Done when** check. Do not move on until it passes.
        print(get("/rest/servicedeskapi/servicedesk"))  # shows your service desk id
    ```
 10. Write down your `serviceDeskId` and each `requestTypeId`:  
-    `GET /rest/servicedeskapi/servicedesk/{serviceDeskId}/requesttype`
+    `GET /rest/servicedeskapi/servicedesk/{serviceDeskId}/requesttype`  
+    Also write down your own `accountId` from `GET /rest/api/3/myself`. Phase 4 uses it to tell your agent replies apart from customer comments.
 
-**Done when:** `python src/jsm.py` prints your service desk, and you have the five request type ids in `.env` or a config file.
+**Done when:** `python src/jsm.py` prints your service desk, and you have all seven request type ids in `.env` or a config file.
 
 ### Phase 1. Help center articles (about 4 hours)
 
@@ -228,8 +230,10 @@ Each phase ends with a **Done when** check. Do not move on until it passes.
    ```
    - Use `@example.com` addresses. That domain is reserved for testing, so no real person gets mail.
    - Mix it like real life: about 12 reschedule or cancel, 8 booking problems, 6 Iris questions, 6 missing confirmations, 4 bugs, 4 general questions. Make some angry, some vague, and some that need a follow up question.
+   - `request_type` must match one of the first six request type names in JSM exactly ("Payment or refund" is for Phase 3B). File 3 or 4 tickets under the wrong request type on purpose, as real customers do; `expected_category` still records the true category.
    - **Fill `expected_category` and `expected_priority` yourself before you build the triage tool.** These are your answer key for Phase 3.
 2. Write `src/seed_tickets.py`:
+   - Take the CSV path as an argument (`--csv`, default `data/tickets_seed.csv`) and read only the columns it needs (`customer_name`, `customer_email`, `request_type`, `summary`, `description`). Phase 3B loads `data/payment_tickets.csv` with the same script.
    - Create each customer: `POST /rest/servicedeskapi/customer` with `{"email": ..., "displayName": ...}`. It returns an `accountId`.
    - If the next step says the customer has no access, add them to the desk: `POST /rest/servicedeskapi/servicedesk/{id}/customer` with `{"accountIds": [...]}`.
    - Create the ticket as that customer:
@@ -261,24 +265,24 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
    Repeat with `nextPageToken` until the response says `isLast: true`.
 2. **Ask the LLM for JSON only**, with a fixed list of allowed values:
    ```
-   category: booking | reschedule | iris | confirmation | bug | general
+   category: booking | reschedule | iris | confirmation | bug | general | payment
    priority: low | medium | high
    sentiment: calm | frustrated | angry
    article_id: one id from kb/index.csv, or "none"
    confidence: 0 to 1
    ```
-   Put the article list (id plus title) in the prompt so the model can only pick a real one.
+   Put the article list (id plus title) in the prompt so the model can only pick a real one. The search above also picks up "Payment or refund" tickets, so `payment` is a category: it hands the ticket to the Phase 3B refund helper through the `cat-payment` label, even when the customer picked a different request type.
 3. **Validate before writing anything.** Check the reply against the allowed values (pydantic works). If it is invalid, or confidence is below 0.6, label the ticket `needs-human` and stop. This is the same idea as the zod check in your Salon assistant.
 4. **Write the result back:**
    - Labels: `PUT /rest/api/3/issue/{key}` with `{"update": {"labels": [{"add": "cat-reschedule"}, {"add": "triaged"}]}}`
-   - Priority: same call with `{"fields": {"priority": {"name": "High"}}}` (match your site's priority names)
+   - Priority: same call with `{"fields": {"priority": {"name": "High"}}}` (match your site's priority names). If Jira replies that the field cannot be set, add Priority to the project's issue screen in Project settings and try again.
    - Internal note: `POST /rest/servicedeskapi/request/{key}/comment` with `{"body": "...", "public": false}`. `public: false` is what keeps it internal. **Test this on one ticket and confirm in the UI that the customer cannot see it before running it on more.**
 5. **Run it on a schedule** with polling: Windows Task Scheduler every 10 minutes, or just run it by hand. Webhooks need a public URL, so skip them for now.
 6. **Measure it honestly** with `src/eval_triage.py`: run the classifier on the 40 seed tickets without writing to JSM, compare with your hand labels, and print category accuracy, priority accuracy, and a confusion table. **This gives you the "[X] of 40" number for the resume.** Never tune the prompt on a ticket and then count that ticket in the score. If you tune, hold out 10 tickets you never look at and report the score on those too.
 
 **Done when:** a new ticket gets labels plus an internal note within one run, invalid model output is caught, and `eval_triage.py` prints a real accuracy number.
 
-### Phase 3B. PayPal refund helper, your PayPal AI Hackathon entry (about 16 hours, Oct 19 to Nov 8)
+### Phase 3B. PayPal refund helper, your PayPal AI Hackathon entry (about 21 hours, Oct 19 to Nov 8)
 
 **Hackathon facts (official page and rules, read October 6, 2026).** The full breakdown, with sources, is in `docs/hackathon-rules.md`.
 
@@ -309,35 +313,54 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
    - Build five requests: get a token (`POST /v1/oauth2/token`, basic auth with id and secret, body `grant_type=client_credentials`), create an order, capture it, look up the capture, and refund it.
    - Export the collection to `postman/paypal_refund_helper.postman_collection.json` and commit it.
 3. **Write `src/paypal.py` (1 hour).** Functions: `token()`, `create_and_capture(...)`, `get_capture(capture_id)`, `refund(capture_id, amount=None, request_id=...)`. At the top, **refuse to run unless `PAYPAL_BASE` contains `sandbox`.** Cache the token until it expires.
-4. **Seed sample payments (2 hours), `src/seed_payments.py`.**
-   - Make about 15 sample customers, the same `@example.com` style as Phase 2, and pay for salon services. Use made up prices unless the owner says you may use hers.
+4. **Seed sample bookings and payments (2 hours), `src/seed_payments.py`.**
+   - Make about 15 sample customers, the same `@example.com` style as Phase 2, each with a booking and a payment for a salon service. Use made up prices unless the owner says you may use hers.
    - **Easy path:** create each order with intent `CAPTURE` and a card `payment_source`, using a test card number from PayPal's sandbox testing guide (developer.paypal.com, Sandbox testing). It completes in one step with no clicks.
    - **Fallback**, if your sandbox app will not take cards: create the order, open its `approve` link, log in with the sandbox personal account, approve, then call `POST /v2/checkout/orders/{id}/capture`.
-   - Build these cases on purpose: 4 duplicate charges (same customer, same amount, minutes apart), 4 cancellations inside the refund window, 3 wrong amounts (charged for a longer service than booked), 2 already refunded (refund them in the script), and 2 that must NOT be refunded (one no-show outside policy, and one whose payment belongs to a different email).
-   - Save every payment in a SQLite table `payments(customer_email, order_id, capture_id, amount, service, created_at)`. This stands in for the salon's own booking database, which would store the PayPal ids.
-   - Send a `PayPal-Request-Id` on every create call, so rerunning the script can never charge twice.
-5. **Write the refund policy (30 minutes), `kb/refund_policy.md`.** A short sample policy, for example: duplicate charge, full refund; cancelled 24 or more hours ahead, full refund; wrong amount, refund the difference; no-show, no refund. Publish it as a help article too.
+   - Build these 15 cases on purpose, each with a fixed `case_id`:
+
+     | Case ids | Count | What happened | Expected action |
+     |---|---|---|---|
+     | `dup-1` to `dup-4` | 4 | Duplicate charge: same customer, same amount, minutes apart | `refund_full` of the second charge |
+     | `cancel-1` to `cancel-3` | 3 | Cancelled 24 or more hours before the appointment | `refund_full` |
+     | `wrong-1` to `wrong-3` | 3 | Charged for a longer service than was booked | `refund_partial`, the difference |
+     | `refunded-1`, `refunded-2` | 2 | Already refunded (the script refunds them) | `no_refund` |
+     | `noshow-1` | 1 | No-show, outside the policy | `no_refund` |
+     | `other-1` | 1 | Asks for a refund of a payment made under a different email | `no_refund` |
+     | `vague-1` | 1 | Customer with several payments says "I think I was overcharged", with no date or amount | `ask_customer` |
+
+   - Save everything in SQLite. These tables stand in for the salon's own booking database, which would store the PayPal ids:
+     ```
+     bookings(booking_id, case_id, customer_email, service, booked_price, appointment_at, status, cancelled_at)
+     payments(case_id, booking_id, customer_email, order_id, capture_id, amount, created_at, is_refund_target)
+     ```
+     `status` is one of `booked`, `completed`, `cancelled`, `no_show`. `is_refund_target` marks the one capture the answer key expects to be refunded (for a duplicate, the second charge). Because every sandbox creates different capture ids, the answer key points at cases, not capture ids.
+   - Send a `PayPal-Request-Id` on every create call, built as `seed-<run_id>-<case_id>-<n>`. `run_id` is saved in the database when a seeding run starts, so rerunning a crashed run reuses the same ids and can never charge twice. `n` numbers the charges inside a case, so both charges of a duplicate case go through. The Reset demo button (step 9) starts a new run, which creates fresh payments instead of returning the old, already refunded ones.
+5. **Write the refund policy (30 minutes), `kb/refund_policy.md`.** A short sample policy, for example: duplicate charge, full refund; cancelled 24 or more hours ahead, full refund; wrong amount, refund the difference; no-show, no refund. Publish it as a help article too. Then write the same rules as one function in code, `policy_allows(claim, booking, payment)`, so the guardrail in step 7 checks the policy against the booking record and never relies on the model.
 6. **Write 15 payment tickets with your answer key (1 hour), `data/payment_tickets.csv`.**
    ```
-   id,customer_name,customer_email,summary,description,expected_action,expected_amount,expected_capture_id
+   id,case_id,customer_name,customer_email,request_type,summary,description,expected_action,expected_amount
    ```
-   `expected_action` is one of `refund_full`, `refund_partial`, `no_refund`, `ask_customer`. **Fill the answer key before you build step 7.** Load the tickets into JSM with your Phase 2 seed script, using the "Payment or refund" request type.
+   - One ticket per case from step 4. `case_id` links the ticket to its seeded booking and payments; the expected capture is that case's payment with `is_refund_target = 1`.
+   - `expected_action` is one of `refund_full`, `refund_partial`, `no_refund`, `ask_customer`. `expected_amount` is empty for `no_refund` and `ask_customer`.
+   - `request_type` is "Payment or refund" for 13 tickets. File the other 2 under a different request type, so the triage hand-off through `cat-payment` gets tested.
+   - **Fill the answer key before you build step 7.** Load the tickets into JSM with `python src/seed_tickets.py --csv data/payment_tickets.csv`.
 7. **Build `src/refund_helper.py`, the core (6 to 8 hours).**
-   1. **Pick up** new "Payment or refund" tickets that have no `refund-proposed` label (filter on the request type in the JQL or in code).
+   1. **Pick up** tickets that have the "Payment or refund" request type or the triage label `cat-payment`, and no `refund-proposed` label (filter in the JQL where you can, otherwise in code).
    2. **AI step 1, understand the claim.** Ask for JSON only: claim type (duplicate, cancelled, wrong_amount, other), the date and the amount the customer mentions. Validate it, same as Phase 3.
-   3. **Find the money.** Look up the customer's payments in the `payments` table by email, then confirm each one live with `GET /v2/payments/captures/{capture_id}` (status, amount, any refunds already made).
-   4. **AI step 2, propose.** Give the model the claim, the verified payments and the refund policy. JSON only: action, capture id, amount, a one line reason, and a draft reply to the customer.
-   5. **Guardrails in code, never skipped:** the capture exists and is `COMPLETED`; it belongs to the ticket's customer; the amount is no more than what is still refundable; it was not already refunded; the policy allows the action; the base URL is the sandbox. Any failure: label `needs-human` and an internal note saying which check failed.
+   3. **Find the money.** Look up the customer's bookings and payments by email, then confirm each payment live with `GET /v2/payments/captures/{capture_id}` (status, amount, any refunds already made).
+   4. **AI step 2, propose.** Give the model the claim, the bookings, the verified payments and the refund policy. JSON only: action, capture id, amount, a one line reason, and a draft reply to the customer.
+   5. **Guardrails in code, never skipped:** the capture exists and is `COMPLETED`; it belongs to the ticket's customer; the amount is no more than what is still refundable; it was not already refunded; `policy_allows` approves the action against the booking record (status, cancellation time, booked price); the base URL is the sandbox. Any failure: label `needs-human` and an internal note saying which check failed.
    6. **Propose.** Post an internal note (`public: false`) with the payment found, the amount, the reason and the draft reply. Add the label `refund-proposed`.
    7. **Wait for you.** You review the note and add `refund-approved` or `refund-rejected` in JSM, or click Approve or Reject on the review page (step 10).
    8. **Refund only after approval.** On the next run the helper sees `refund-approved`, runs the guardrails again, calls `POST /v2/payments/captures/{capture_id}/refund` with `PayPal-Request-Id` set to `<ticket key>-<capture id>` (so a retry can never refund twice), and posts an internal note with the refund id and status. You send the customer the draft reply yourself.
    9. **Audit log.** Write every proposal, approval, rejection and refund to an `audit` table with a timestamp.
-   - **Optional, for "Best Use of Agentic Commerce":** PayPal's Agent Toolkit (Python) gives an AI agent ready made tools such as get order, create refund and list transactions. You can use it for the lookup and refund calls, but keep your own guardrail checks around it, because the toolkit's refund tool refunds whatever it is told to.
-8. **Measure it honestly (1 hour), `src/eval_refunds.py`.** Run steps 2 to 5 on the 15 tickets without writing anything. Compare with your answer key and print matched actions, matched amounts, and how many bad cases the guardrails stopped. This is the "[X] of 15" number. Same rule as Phase 3: never score a ticket you tuned the prompt on.
+   - **Optional, for "Best Use of Agentic Commerce":** PayPal's AI Toolkit (github.com/paypal/AI-Toolkit) gives an AI agent ready made tools through an MCP server, such as get order, create refund and list transactions. You can use it for the lookup and refund calls, but keep your own guardrail checks around it, because the toolkit's refund tool refunds whatever it is told to.
+8. **Measure it honestly (1 hour), `src/eval_refunds.py`.** Run steps 2 to 5 on the 15 tickets without writing anything. Compare with your answer key and print matched actions, matched amounts, matched captures (the case's `is_refund_target` payment), and how many bad cases the guardrails stopped. This is the "[X] of 15" number. It runs the same way in any sandbox, because the answer key points at cases, not capture ids. Same rule as Phase 3: never score a ticket you tuned the prompt on.
 9. **Make it runnable by judges (4 hours).** Judges cannot log into your Jira, and the rules say the project must be available to them free of charge and without restriction, so they cannot be asked to bring their own paid AI key. Add `DEMO_MODE=1` and host it:
    - Demo mode reads tickets from `data/payment_tickets.csv` instead of JSM, and shows proposals and approvals on the review page instead of writing to JSM.
    - It still calls the real PayPal sandbox and a real AI model.
-   - **Primary: a hosted demo on Render.** Deploy the review page with your own sandbox and model keys set as Render environment variables (never in the repo). Claim the $50 hackathon credits. Set a monthly spend limit on the model API key. Add a "Reset demo" button that reseeds the sample payments, so every judge starts from the same state. The free tier sleeps when idle and takes about a minute to wake, so either say so on the page or use the credits for an always-on instance.
+   - **Primary: a hosted demo on Render.** Deploy the review page with your own sandbox and model keys set as Render environment variables (never in the repo). Claim the $50 hackathon credits. Set a monthly spend limit on the model API key. Add a "Reset demo" button that starts a new seeding run, so every judge starts from the same state. Render's free tier wipes the local disk on every restart, so the app also reseeds at startup whenever the database is empty. The free tier sleeps when idle and takes about a minute to wake, so either say so on the page or use the credits for an always-on instance.
    - **Keep it live until judging ends on December 15**, and check it once a week until then.
    - **Backup: run it locally.** Add a "Run it in 5 minutes" section to the README: clone, add your own keys, `python src/seed_payments.py`, `streamlit run src/review_app.py`. Name a free model option (for example the Gemini free tier) so a local run can also cost nothing.
 10. **Design the review page (3 hours), `src/review_app.py`.** "Design" is a judging criterion, so give the agent a real screen: a table of proposals (customer, what they claim, payment found, proposed amount, reason) with Approve and Reject buttons and the draft reply underneath. Streamlit is enough. AG Grid's free Community edition can be used for the table, but it does not compete for the AG Grid prize, which is judged on AG Grid Studio.
@@ -361,7 +384,7 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
    ```
 2. `src/export.py` fills it:
    - Tickets: the search API from Phase 3 (also ask for the `resolutiondate` and `status` fields).
-   - Comments: `GET /rest/servicedeskapi/request/{key}/comment` (each comment says whether it is public and who wrote it).
+   - Comments: `GET /rest/servicedeskapi/request/{key}/comment` (each comment says whether it is public and who wrote it). The API does not say whether the author is an agent, so set `is_agent` by comparing the author's `accountId` with your own (Phase 0 step 10). Internal notes from the triage and refund helpers are posted with your token too; they are not public, so the first response metric skips them.
    - SLAs, if your plan has them: `GET /rest/servicedeskapi/request/{key}/sla`.
    - Dates come back in several formats. Use the ISO 8601 one and store UTC.
 3. `sql/metrics.sql`, one query each:
@@ -380,7 +403,7 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
 1. Take the top repeat issue from the metrics, write the missing help article, and note in the README which ticket data led to it. This is the "turned the top repeat issue into a new help article" bullet.
 2. `src/weekly_report.py` writes `reports/week_YYYY_MM_DD.md` in plain language: what came in, how fast it was answered, what keeps repeating, and what to fix in the product. This is the kind of note a TAM or customer success person sends every week.
 3. README: one paragraph on what it is, an architecture sketch (JSM → triage script → JSM; JSM → export → SQLite → dashboard), 4 screenshots (portal, queue, internal note, dashboard), how to run it, and the results table with your real numbers.
-4. Record a 3 minute walkthrough (OBS Studio is free, or Loom's free plan, which caps recordings at 5 minutes) and link it in the README. Show only sample data, never a token.
+4. Record a 3 minute walkthrough (OBS Studio is free, or Loom's free plan, which caps recordings at 5 minutes) and link it in the README. Show only sample data, never a token. This video covers the whole help desk; the hackathon video (section 12) covers only the refund helper. Reuse your OBS scene setup from the hackathon recording.
 5. Tell Claude your final numbers, and the project goes onto the non SWE base resume.
 
 **Done when:** the README alone explains the project to a hiring manager in 2 minutes.
@@ -432,6 +455,8 @@ The hackathon deadline sets the order: Phases 0 to 3B come first, and Phases 4 a
 | Risk | What to do |
 |---|---|
 | JSM Free plan missing or changed | Use Zammad in Docker. Same phases, different API calls |
+| No Customer service template on the Free plan | Use General service management (Phase 0 step 2) |
+| Setting priority through the API fails | Add Priority to the project's issue screen (Phase 3 step 4) |
 | Knowledge base pushes a paid Confluence trial | Decline. Keep articles in `kb/articles.md` and publish them in the README until you find the free path |
 | SLAs not on the Free plan | Skip step 0.5. Your SQL calculates response and resolution times anyway |
 | `raiseOnBehalfOf` errors | Add the customer to the service desk first (Phase 2, step 2) |
@@ -471,7 +496,7 @@ All calls use basic auth with your email and API token. Base URL is your site.
 | Refund (full: empty body; partial: send `amount`) | `POST /v2/payments/captures/{capture_id}/refund` with header `PayPal-Request-Id` |
 | Look up a refund | `GET /v2/payments/refunds/{refund_id}` |
 
-PayPal docs: developer.paypal.com (Orders v2, Payments v2, Sandbox testing guide, Agent Toolkit).
+PayPal docs: developer.paypal.com (Orders v2, Payments v2, Sandbox testing guide). AI Toolkit: github.com/paypal/AI-Toolkit.
 
 Atlassian docs: developer.atlassian.com, then Jira Service Management Cloud REST API, and Jira Cloud platform REST API v3.
 
@@ -480,7 +505,7 @@ Atlassian docs: developer.atlassian.com, then Jira Service Management Cloud REST
 **Due Thursday November 12, 2026, 3:00 PM New York time. Aim to submit by November 10.**
 
 1. **Secret check before anything goes public.**
-   - Search the whole history: `git log -p | findstr /i "secret token client_id api_key sk-"`.
+   - Scan the whole history with gitleaks (free, open source, from its GitHub releases page): `gitleaks git .` must report no leaks. A plain text search such as `findstr` also matches every harmless `token()` call, so it is too noisy to trust.
    - Confirm `.env` was never committed: `git log --all -- .env` must print nothing.
    - If a key ever appeared in a commit, revoke it and make a new one. Deleting the line is not enough, because history keeps it.
 2. **Add the license.** Put an MIT `LICENSE` file in the repo root. After pushing, check that GitHub shows "MIT license" in the About box on the right. That is a hackathon rule.
