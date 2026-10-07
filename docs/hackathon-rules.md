@@ -88,17 +88,23 @@ Prize payment requires a winner affidavit (due within 10 business days), tax for
 
 **In the project.** Any AI tool, model or platform is allowed. There is no upper limit; the requirement is that both PayPal and AI are central to the project.
 
-**While building the project.** The rules do not mention AI coding assistants. The relevant rules are that the submission must be the entrant's original work, solely owned by the entrant, and that prizes are subject to verification of the winner's role in creating it. PayPal's own AI Toolkit ships plugins for Claude Code, Codex and Cursor, so AI-assisted development is clearly expected. Our approach:
+**While building the project.** The rules do not mention AI coding assistants. The relevant rules are that the submission must be the entrant's original work, solely owned by the entrant, and that prizes are subject to verification of the winner's role in creating it. PayPal's own AI Toolkit ships plugins for Claude Code, Codex and Cursor, so AI-assisted development is clearly expected. PayPal's October 7 sponsor webinar went further: it demonstrated building with the APIMatic Context Plugin inside Claude Code, and the APIMatic prize requires building the integration with that plugin. Our approach:
 
 - Make the design decisions ourselves and be able to explain every part of the code.
 - List every tool honestly in the submission, including AI coding assistants.
-- For a written confirmation, ask in the hackathon Discord.
+- For a written confirmation, ask in the hackathon Discord. A member's reply is not an official answer (see the Discord rules below), so count it only if it comes from PayPal or Devpost staff; otherwise ask the Devpost help desk.
 
 ## PayPal AI tooling
 
 - **PayPal AI Toolkit** (github.com/paypal/AI-Toolkit): an MCP server with plugins for Claude Code, Codex and Cursor. Covers orders, captures, refunds, invoices, subscriptions, disputes, catalog, shipments and transaction reporting. Sandbox only.
 - **Disputes API:** list and respond to buyer disputes. Not in our current scope, but it fits a refund helper and could strengthen the innovation score.
-- Other resources: REST API docs, JavaScript SDK v6, webhooks, payouts, invoicing, and a sandbox getting-started repository.
+- **Sandbox getting-started guide** (github.com/paypaldev/getting-started-with-paypal-sandbox): accounts, credentials, a first test payment and negative testing. The repository has no license, so link to it rather than copying from it. Points we will use:
+  - developer.paypal.com takes the real PayPal login; www.sandbox.paypal.com takes only generated sandbox account logins. The API base is `https://api-m.sandbox.paypal.com`.
+  - A personal (buyer) sandbox account needs a balance to pay with PayPal funds. Balances are set under Testing Tools, Sandbox Accounts, View/Edit Account.
+  - To force an error on a sandbox call, add the header `PayPal-Mock-Response: {"mock_application_codes": "<CODE>"}`. Each API has its own codes, listed in the Orders v2 and Payments v2 error references. This lets us test refund failure handling without a real failure.
+  - Branch error handling on `details[0].issue` and log `debug_id`, which PayPal asks for in support requests.
+  - Account-level Negative Testing (View/Edit Account, Settings) makes every transaction on that account fail. Turn it off afterwards.
+- Other resources: REST API docs, JavaScript SDK v6, webhooks, payouts and invoicing.
 
 ## Sponsor tools
 
@@ -106,27 +112,64 @@ Sponsor tools are optional. Any AI tool works as long as PayPal is central.
 
 | Tool | What is offered | Prize | Our plan |
 |---|---|---|---|
-| Render | $50 hackathon credits; Render Workflows for agent orchestration | Credits | **Use.** Host the judges' demo URL, which also enters us for this prize |
+| Render | $50 hackathon credits; Render Workflows for agent orchestration | Credits | **Use.** Host the judges' demo URL, which also enters us for this prize. The credit code sits behind the "Start building with $50" link on the Render details page, which does not look like a link |
 | Postman | Free platform, PayPal API collection | None | Use for testing and documenting API calls |
-| AG Grid | AG Grid Studio, a React boilerplate, a free 45-day trial license | Cash | **Skip.** Judges want custom widgets, theming and the Studio Agent Framework, which is a separate project |
-| APIMatic | Context plugins for AI agents | Cash and subscription | Not planned |
+| AG Grid | AG Grid Studio, a React boilerplate, a free 45-day trial license | Cash | **Skip.** Judges want custom widgets, theming and the Studio Agent Framework, which is a separate project. The license is not the blocker: AG Grid's DevRel lead said in Discord that every product works without a license for the hackathon, showing a watermark and a console error that judging does not penalize |
+| APIMatic | Context Plugin: skills that teach a coding agent the APIMatic-generated PayPal Server SDK (details below) | Cash and subscription | **Decide before #17.** It covers the Orders and Payments calls `src/paypal.py` needs |
 | Bryntum | Calendar, scheduler and grid components | Cash | Not planned |
-| Channel3, Elastic, KERNEL, Astropods, Zapier | Product data, vector search, agent browsing, agent infrastructure, automation | Channel3 only | Not planned |
+| Zapier | Zapier MCP: AI agent actions across 9,000+ apps, including PayPal invoices, orders and refund triggers | None | **Skip.** PayPal is a premium Zapier app, so it needs the 14-day Professional trial, which would end long before judging ends on December 15 and break the hosted demo. Each successful MCP call also uses 2 plan tasks |
+| Channel3, Elastic, KERNEL, Astropods | Product data, vector search, agent browsing, agent infrastructure | Channel3 only | Not planned |
+
+### APIMatic Context Plugin
+
+From the October 7 webinar (PayPal and APIMatic) and the plugin's README.
+
+- **What it is.** A Claude Code, Cursor, Codex or VS Code plugin whose skills teach the agent the PayPal Server SDK from the SDK's own source and docs. Languages: TypeScript, Python, Java, Ruby, PHP and C#. APIs: Orders, Payments, Vault, Subscriptions and Transaction search.
+- **Install.** `npx context-plugins install https://github.com/paypaldev/server-sdk-context-plugin-preview`
+- **Status.** A preview made for the hackathon. The README says it "is not an official long term supported PayPal product and may be removed at any time."
+- **Prize ("Best Use of APIMatic").** The top 3 win $1,000 each plus six months of APIMatic Business. Every submission that uses the plugin gets one month of APIMatic Basic. To qualify, build the PayPal integration with the plugin and answer the plugin question on the submission form.
+- **What it changes for us.** `src/paypal.py` would call the PayPal Server SDK for Python instead of plain `requests`. The sandbox-only check, the `PayPal-Request-Id` on refunds and the guardrails stay ours either way.
+- The webinar's claims (86% fewer errors, 50 times cheaper) are APIMatic's own benchmark, not independent results.
 
 ## Events and support
 
 | Date | Time | Session |
 |---|---|---|
-| Oct 7 | 9:00 AM PT (12:00 PM ET) | Power Your PayPal Hackathon Project with APIMatic Context Plugins |
+| Oct 7 | 9:00 AM PT (12:00 PM ET) | Power Your PayPal Hackathon Project with APIMatic Context Plugins (held; slides in the Discord, summary under Sponsor tools) |
 | Oct 12 | 7:00 AM PT (10:00 AM ET) | Build a payments dashboard without building a dashboard |
 | Oct 13 | 1:00 AM PT (4:00 AM ET) | Start building with PayPal (repeat of the Oct 6 session) |
 
 Support is available in the PayPal Discord (discord.gg/sJ2G6DyvSK) and through the Devpost help desk.
 
+## PayPal developer Discord rules
+
+From the server's welcome message, read on October 7, 2026. The server is a community space, not an official PayPal support channel. A member's reply is not PayPal advice or an official statement, and PayPal's official terms and developer documentation win over anything said there. Discord's Community Guidelines and Terms of Service also apply. Breaking the rules can lead to removed posts, warnings, restrictions or a ban.
+
+What applies to us:
+
+- **Never post secrets or payment data, even from the sandbox.** No API keys, client secrets, access tokens, webhook secrets, transaction or capture ids, card data, PayPal account details, or screenshots that show any of them. The server enforces this automatically. When asking about an API error, post the endpoint, the status code and the error name, with every id and token removed.
+- **No personal data.** Our sample customers are made up, but real salon customers and the owner's details must never appear.
+- **No proprietary or third-party content.** Do not paste SalonWebsite code or the owner's business information. The public Support_desk repo is fine to link.
+- **Technical questions only.** No requests for financial, legal, tax, regulatory or compliance advice. Ask how the refunds endpoint behaves, not whether our refund policy is compliant.
+- **Account matters go to official PayPal support,** not the server: account issues, disputes, holds, limitations, fraud and security incidents.
+- **Use channels, not DMs.** PayPal staff never ask for passwords, 2FA codes, API secrets or account details by DM. Report any DM that does.
+- **Sharing the project is fine; promotion is not.** Post the repo or demo link in an on-topic channel, without repeating it across channels.
+- **Technical questions go in the dev-questions channel.** Staff redirect questions asked elsewhere, or by DM, to it. Webinar recordings and slides are pinned in the hackathon channel.
+
+## Answers from the Discord
+
+Read on October 7, 2026. Only answers from PayPal or sponsor staff count as guidance; tips from other entrants are marked as such and need checking.
+
+- **Plain REST is enough.** The JavaScript SDK v6 is not required; calling the PayPal API directly also counts (PayPal developer advocate).
+- **Mixing is fine.** Calling the REST API directly for anything the PayPal MCP server does not cover, and using the AI Toolkit for the rest, is allowed. PayPal asks to hear which features the MCP server is missing (PayPal developer advocate).
+- **Disputes in the sandbox** need dispute creation enabled in the sandbox account settings. Creating one through the API as the buyer needs the `PayPal-Auth-Assertion` header, and one entrant got `No permissions to set target_client_id` (a missing `GRANT_PROXY_CLIENT` permission), which PayPal is looking into. An entrant's workaround: a second sandbox Business account acts as the buyer with its own REST app, pays the merchant account, then opens the dispute. This matters only if we add the Disputes API.
+- **Sandbox accounts (entrant tip).** Card payments through `payment_source.card` work in only 37 sandbox countries. Create the sandbox accounts as US accounts.
+- **Region sign-up problems** (Bangladesh, Pakistan, India, Türkiye and others) are still being looked into by PayPal. They do not affect us.
+
 ## What this means for our entry
 
 1. **Hosted demo on Render.** Judges cannot be required to bring their own paid AI keys, so the review page runs on Render with our sandbox and model keys, and stays live until December 15. The local "run it in 5 minutes" setup remains as a backup.
-2. **Prize targets.** One Honorable Mention (Best Use of PayPal + AI, or Best Demo Delivery) plus the Render sponsor prize. A Grand Prize is the stretch goal.
+2. **Prize targets.** One Honorable Mention (Best Use of PayPal + AI, or Best Demo Delivery) plus one sponsor prize. A Grand Prize is the stretch goal. Only one sponsor prize can be won, so if `src/paypal.py` is built with the APIMatic Context Plugin, APIMatic ($1,000 cash) becomes the sponsor target and Render (credits) the fallback; Render still hosts the demo either way.
 3. **Skip the AG Grid prize.** It needs AG Grid Studio and a polished React dashboard, which is outside our time budget.
 4. **Keep the video on our own screens.** Show our refund desk app and the PayPal sandbox only.
 5. **License.** The MIT license was added on October 6. Confirm that GitHub still shows it at the top of the repository page before submitting.
@@ -144,3 +187,11 @@ Support is available in the PayPal Discord (discord.gg/sJ2G6DyvSK) and through t
 - [Postman details](https://paypalaihackathon.devpost.com/details/postman)
 - [PayPal Community Blog announcement](https://developer.paypal.com/community/blog/PayPal_AI_Hackathon/)
 - [PayPal AI Toolkit](https://github.com/paypal/AI-Toolkit)
+- [PayPal AI tools, getting started](https://developer.paypal.com/ai-tools/get-started)
+- [PayPal Developer Docs](https://developer.paypal.com/)
+- [PayPal Sandbox](https://sandbox.paypal.com/)
+- [Getting started with the PayPal sandbox](https://github.com/paypaldev/getting-started-with-paypal-sandbox)
+- [PayPal Postman collection](https://postman.com/paypal)
+- [PayPal docs example code](https://github.com/paypal-examples/docs-examples)
+- [PayPal Server SDK Context Plugin (preview)](https://github.com/paypaldev/server-sdk-context-plugin-preview)
+- [Sandbox dispute setup](https://developer.paypal.com/disputes/set-up)

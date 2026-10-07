@@ -1,0 +1,11 @@
+article_id,title,url,category
+KB-01,How do I book an appointment?,,booking
+KB-02,How do I choose a service and stylist?,,booking
+KB-03,How do I reschedule my appointment?,,reschedule
+KB-04,How do I cancel my appointment?,,reschedule
+KB-05,Using the chat assistant (Iris),,iris
+KB-06,"Iris didn't understand me, or won't let me type",,iris
+KB-07,I did not get a confirmation email,,confirmation
+KB-08,What are the salon's hours and where is it?,,general
+KB-09,How do I contact the salon?,,general
+KB-10,Internal: adding a service or a promotion,,internal

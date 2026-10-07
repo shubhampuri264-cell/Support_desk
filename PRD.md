@@ -338,6 +338,8 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
    - Go to developer.paypal.com and log in or sign up. Open **Apps & Credentials**, keep the toggle on **Sandbox**, and click **Create App**.
    - Copy the Client ID and Secret into `.env` as `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET`, and set `PAYPAL_BASE=https://api-m.sandbox.paypal.com`.
    - Under **Sandbox accounts** you get a test business account (the made-up business) and a test personal account (a customer). Sandbox money is fake.
+   - Walkthrough with screenshots: PayPal's [getting started with the sandbox](https://github.com/paypaldev/getting-started-with-paypal-sandbox) guide. Two sites, two logins: developer.paypal.com takes your real PayPal login, and www.sandbox.paypal.com takes only the generated sandbox account logins (needed for the approve-link fallback in step 4).
+   - Check that both sandbox accounts are US accounts (Testing Tools, Sandbox Accounts). If not, create new ones with country United States: one-step card payments (step 4, easy path) work in only 37 sandbox countries, according to another entrant in the hackathon Discord.
 2. **Try every call in Postman before coding it (1 hour).** Postman is a hackathon sponsor tool (it has no prize of its own) and fills a gap on your resume.
    - Create a Postman environment with `client_id`, `client_secret` and `base_url` as variables, so no secret ever sits inside the collection.
    - Build five requests: get a token (`POST /v1/oauth2/token`, basic auth with id and secret, body `grant_type=client_credentials`), create an order, capture it, look up the capture, and refund it.
@@ -530,7 +532,7 @@ All calls use basic auth with your email and API token. Base URL is your site.
 | Refund (full: empty body; partial: send `amount`) | `POST /v2/payments/captures/{capture_id}/refund` with header `PayPal-Request-Id` |
 | Look up a refund | `GET /v2/payments/refunds/{refund_id}` |
 
-PayPal docs: developer.paypal.com (Orders v2, Payments v2, Sandbox testing guide). AI Toolkit: github.com/paypal/AI-Toolkit.
+PayPal docs: developer.paypal.com (Orders v2, Payments v2, Sandbox testing guide). Sandbox walkthrough: github.com/paypaldev/getting-started-with-paypal-sandbox. AI Toolkit: github.com/paypal/AI-Toolkit.
 
 Atlassian docs: developer.atlassian.com, then Jira Service Management Cloud REST API, and Jira Cloud platform REST API v3.
 
