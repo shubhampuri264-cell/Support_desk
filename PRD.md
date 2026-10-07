@@ -79,7 +79,7 @@ Write "Winner" or "Finalist" only if it is true. Add "PayPal REST API" and "Post
 | The salon owner | Real | Gets escalations about her business. Must approve Phase 6 and anything shown on video |
 | Engineering (also you) | Real | Receives bug escalations as GitHub issues in the SalonWebsite repo |
 | Paying customers (Phase 3B) | Sample only, PayPal sandbox | Complain about double charges, cancellations and wrong amounts |
-| Hackathon judges | Real | Run your demo mode and watch your video |
+| Hackathon judges | Real | Open your hosted demo (or run demo mode locally) and watch your video |
 
 ## 5. Tools and cost
 
@@ -87,10 +87,10 @@ All free. Free tiers change, so confirm each one when you sign up.
 
 | Tool | Use | Free tier (checked Oct 2026) |
 |---|---|---|
-| Jira Service Management Cloud, Free plan | Help desk, portal, queues, request types | Up to 3 agents, unlimited customers, customer portal, email channel, basic automation |
+| Jira Service Management Cloud, Free plan (now sold as part of "Service Collection") | Help desk, portal, queues, request types | Free forever for 3 agents, customer portal, email, chat and widget channels, queues, embedded knowledge base, 1,250 automation steps a month. SLAs on Free are not confirmed; check Project settings |
 | JSM knowledge base | Help articles | Built in, powered by Confluence. If it asks you to add Confluence, add the **Free** Confluence plan. Never start a paid trial |
 | Python 3.11+ | Scripts | Free |
-| Claude API (or Gemini API) | Triage labels | Pennies for 40 tickets on a small model such as Claude Haiku 4.5 (`claude-haiku-4-5-20251001`). Gemini has a free tier if you prefer $0 |
+| Claude API (or Gemini API) | Triage labels | Pennies for 40 tickets on a small model such as Claude Haiku 4.5 (`claude-haiku-4-5-20251001`). Gemini has a free tier if you prefer $0, but Google may use free tier content to improve its products, so send it sample data only, never real customer messages |
 | SQLite | Metrics database | Free, no setup |
 | Streamlit | Dashboard and refund review page | Free |
 | PayPal Developer sandbox | Fake payments and refunds (Phase 3B) | Free |
@@ -103,7 +103,7 @@ All free. Free tiers change, so confirm each one when you sign up.
 
 ## 6. Repo layout
 
-The repo already exists at `c:\me files\Coding Projects\salon-support-desk` with this PRD, a README, `.gitignore`, `.env.example` and `requirements.txt`. Build toward this:
+The repo already exists at `c:\me files\Coding Projects\salon-support-desk` and is public on GitHub at `github.com/shubhampuri264-cell/Support_desk`, with this PRD, a README, the license, the hackathon rules summary, `.gitignore`, `.env.example` and `requirements.txt`. Build toward this:
 
 ```
 salon-support-desk/
@@ -111,7 +111,7 @@ salon-support-desk/
   README.md              what it is, screenshots, how to run, walkthrough video link
   .env.example           names of the secrets (copy to .env, never commit .env)
   requirements.txt
-  LICENSE                MIT; the repo is already public, so add it now (hackathon rule)
+  LICENSE                MIT, added October 6, 2026 (hackathon rule)
   docs/
     hackathon-rules.md   summary of the official hackathon rules and what they mean for this entry
   data/
@@ -150,7 +150,7 @@ Each phase ends with a **Done when** check. Do not move on until it passes.
 ### Phase 0. Setup (about 2 hours)
 
 1. Go to atlassian.com, choose Jira Service Management, and sign up for the **Free** plan with your own email. Pick a site name such as `spuri-support`. Your site URL becomes `https://spuri-support.atlassian.net`.
-2. Create a project from the **Customer service** template (not IT service management). Name it `Salon Support`, key `SUP`. If the Free plan does not offer a Customer service template, use **General service management**; every step below still applies.
+2. Create a project from the **General service management** template. Name it `Salon Support`, key `SUP`. Do not use the "Customer service management" template: it now creates a space in Atlassian's separate Customer Service Management app, which has its own API, and the `servicedeskapi` calls in this plan are not confirmed to work there.
 3. Set up **request types** (Project settings, Request types). Use these seven and give each a one line description customers will see. Delete or hide any default request types the template adds.
    - Booking problem
    - Reschedule or cancel
@@ -165,7 +165,7 @@ Each phase ends with a **Done when** check. Do not move on until it passes.
    - Time to resolution: 48 hours  
    If SLAs are not on your plan, skip this. Your Phase 4 script calculates both numbers anyway.
 6. **Turn off customer notifications** before seeding (Project settings, Customer notifications), so 40 sample tickets do not send 40 emails. Turn them back on before Phase 6.
-7. Create an **API token**: id.atlassian.com, Security, API tokens, Create. Save it once; you cannot view it again.
+7. Create an **API token**: id.atlassian.com, Security, API tokens, Create. Save it once; you cannot view it again. Create it on your own account, which must be the site admin and one of the 3 agents: creating customers needs Jira admin rights, adding them to the desk needs service desk admin rights, and raising tickets on a customer's behalf or reading SLAs needs an agent.
 8. In the repo:
    ```
    python -m venv .venv
@@ -247,7 +247,7 @@ Each phase ends with a **Done when** check. Do not move on until it passes.
      }
      ```
    - Save the returned issue key (for example `SUP-12`) next to the CSV id.
-   - Load in 4 batches of 10 on different days, so your response times look like real work instead of 40 tickets created in the same minute.
+   - Load in 4 batches of 10 on different days, so the response times measure how you actually worked through them, instead of 40 tickets created in the same minute.
 3. **Work every ticket as the agent in the JSM web UI.** Reply publicly, ask a follow up where the ticket is vague, link the right article, and resolve. For bug tickets, open a GitHub issue in the SalonWebsite repo and link it in an internal note. This is the actual support work and where your interview stories come from.
 4. Keep a short log in `reports/agent_notes.md` of anything surprising, such as a missing article or a confusing feature.
 
@@ -259,10 +259,13 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
 
 1. **Find new tickets** with the Jira search API. The old `/rest/api/3/search` endpoint is removed; use the new one, which pages with a token:
    ```
-   GET /rest/api/3/search/jql?jql=project = SUP AND labels is EMPTY ORDER BY created ASC
+   GET /rest/api/3/search/jql?jql=project = SUP AND labels is EMPTY AND statusCategory != Done ORDER BY created ASC
        &fields=summary,description,created,priority,labels&maxResults=50
    ```
-   Repeat with `nextPageToken` until the response says `isLast: true`.
+   Repeat with `nextPageToken` until the response says `isLast: true`. The `statusCategory != Done` part keeps the tool off the Phase 2 tickets you already resolved by hand, so it only touches tickets that are still open, as it would in real life.
+   - Always pass `fields`: without it, this endpoint returns only issue ids.
+   - Always keep `project = SUP` in the JQL: the endpoint rejects searches that are not limited to a project or similar.
+   - A ticket created a few seconds ago may not show up yet. That is normal; the next run picks it up.
 2. **Ask the LLM for JSON only**, with a fixed list of allowed values:
    ```
    category: booking | reschedule | iris | confirmation | bug | general | payment
@@ -315,7 +318,7 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
 3. **Write `src/paypal.py` (1 hour).** Functions: `token()`, `create_and_capture(...)`, `get_capture(capture_id)`, `refund(capture_id, amount=None, request_id=...)`. At the top, **refuse to run unless `PAYPAL_BASE` contains `sandbox`.** Cache the token until it expires.
 4. **Seed sample bookings and payments (2 hours), `src/seed_payments.py`.**
    - Make about 15 sample customers, the same `@example.com` style as Phase 2, each with a booking and a payment for a salon service. Use made up prices unless the owner says you may use hers.
-   - **Easy path:** create each order with intent `CAPTURE` and a card `payment_source`, using a test card number from PayPal's sandbox testing guide (developer.paypal.com, Sandbox testing). It completes in one step with no clicks.
+   - **Easy path:** create each order with intent `CAPTURE` and a card `payment_source`, using a test card number from PayPal's card testing page (developer.paypal.com, Sandbox, Card testing). It completes in one step with no clicks: the response has `status: COMPLETED` and the capture id is in `purchase_units[0].payments.captures[0]`. This needs card payments enabled on the sandbox app (Apps & Credentials, your app, Features, Accept payments; usually on by default), and PayPal rejects this one-step call if the `PayPal-Request-Id` header is missing.
    - **Fallback**, if your sandbox app will not take cards: create the order, open its `approve` link, log in with the sandbox personal account, approve, then call `POST /v2/checkout/orders/{id}/capture`.
    - Build these 15 cases on purpose, each with a fixed `case_id`:
 
@@ -335,7 +338,7 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
      payments(case_id, booking_id, customer_email, order_id, capture_id, amount, created_at, is_refund_target)
      ```
      `status` is one of `booked`, `completed`, `cancelled`, `no_show`. `is_refund_target` marks the one capture the answer key expects to be refunded (for a duplicate, the second charge). Because every sandbox creates different capture ids, the answer key points at cases, not capture ids.
-   - Send a `PayPal-Request-Id` on every create call, built as `seed-<run_id>-<case_id>-<n>`. `run_id` is saved in the database when a seeding run starts, so rerunning a crashed run reuses the same ids and can never charge twice. `n` numbers the charges inside a case, so both charges of a duplicate case go through. The Reset demo button (step 9) starts a new run, which creates fresh payments instead of returning the old, already refunded ones.
+   - Send a `PayPal-Request-Id` on every create call, built as `seed-<run_id>-<case_id>-<n>`. `run_id` is saved in the database when a seeding run starts, so rerunning a crashed run reuses the same ids and can never charge twice. `n` numbers the charges inside a case, so both charges of a duplicate case go through. The Reset demo button (step 9) starts a new run, which creates fresh payments instead of returning the old, already refunded ones. PayPal remembers order request ids for 6 hours, so a rerun protects you within that window. Keep every request id under 38 characters.
 5. **Write the refund policy (30 minutes), `kb/refund_policy.md`.** A short sample policy, for example: duplicate charge, full refund; cancelled 24 or more hours ahead, full refund; wrong amount, refund the difference; no-show, no refund. Publish it as a help article too. Then write the same rules as one function in code, `policy_allows(claim, booking, payment)`, so the guardrail in step 7 checks the policy against the booking record and never relies on the model.
 6. **Write 15 payment tickets with your answer key (1 hour), `data/payment_tickets.csv`.**
    ```
@@ -360,12 +363,12 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
 9. **Make it runnable by judges (4 hours).** Judges cannot log into your Jira, and the rules say the project must be available to them free of charge and without restriction, so they cannot be asked to bring their own paid AI key. Add `DEMO_MODE=1` and host it:
    - Demo mode reads tickets from `data/payment_tickets.csv` instead of JSM, and shows proposals and approvals on the review page instead of writing to JSM.
    - It still calls the real PayPal sandbox and a real AI model.
-   - **Primary: a hosted demo on Render.** Deploy the review page with your own sandbox and model keys set as Render environment variables (never in the repo). Claim the $50 hackathon credits. Set a monthly spend limit on the model API key. Add a "Reset demo" button that starts a new seeding run, so every judge starts from the same state. Render's free tier wipes the local disk on every restart, so the app also reseeds at startup whenever the database is empty. The free tier sleeps when idle and takes about a minute to wake, so either say so on the page or use the credits for an always-on instance.
+   - **Primary: a hosted demo on Render.** Deploy the review page as a Render web service with the start command `streamlit run src/review_app.py --server.address 0.0.0.0 --server.port $PORT`, and set your own sandbox and model keys as Render environment variables (never in the repo). Claim the $50 hackathon credits. Set a monthly spend limit on the model API key. Add a "Reset demo" button that starts a new seeding run, so every judge starts from the same state. Render's free tier wipes the local disk on every restart, so the app also reseeds at startup whenever the database is empty. The free tier sleeps when idle and takes about a minute to wake, so either say so on the page or use the credits for an always-on instance.
    - **Keep it live until judging ends on December 15**, and check it once a week until then.
    - **Backup: run it locally.** Add a "Run it in 5 minutes" section to the README: clone, add your own keys, `python src/seed_payments.py`, `streamlit run src/review_app.py`. Name a free model option (for example the Gemini free tier) so a local run can also cost nothing.
 10. **Design the review page (3 hours), `src/review_app.py`.** "Design" is a judging criterion, so give the agent a real screen: a table of proposals (customer, what they claim, payment found, proposed amount, reason) with Approve and Reject buttons and the draft reply underneath. Streamlit is enough. AG Grid's free Community edition can be used for the table, but it does not compete for the AG Grid prize, which is judged on AG Grid Studio.
 
-**Done when:** a "charged twice" ticket goes from arrival, to a proposal note, to your approval, to a real sandbox refund, to an internal note with the refund id; the guardrails stop both "must not refund" cases; the hosted demo URL works end to end in a logged-out browser window; demo mode also runs from a fresh clone; and `eval_refunds.py` prints a real score.
+**Done when:** a "charged twice" ticket goes from arrival, to a proposal note, to your approval, to a real sandbox refund, to an internal note with the refund id; the guardrails stop both "must not refund" cases (`noshow-1` and `other-1`); the hosted demo URL works end to end in a logged-out browser window; demo mode also runs from a fresh clone; and `eval_refunds.py` prints a real score.
 
 ### Phase 4. Metrics in SQL and a dashboard (about 6 hours)
 
@@ -383,7 +386,8 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
    );
    ```
 2. `src/export.py` fills it:
-   - Tickets: the search API from Phase 3 (also ask for the `resolutiondate` and `status` fields).
+   - Tickets: the search API from Phase 3, without the `labels is EMPTY` and `statusCategory` filters, and also asking for the `resolutiondate`, `status` and Request Type fields (Request Type is a custom field; find its id with `GET /rest/api/3/field`).
+   - Category and sentiment: take them from the triage labels when a ticket has them. The 40 Phase 2 tickets were resolved before triage existed, so for those, take the category from your hand labels in `data/tickets_seed.csv` (matched through the issue keys saved in Phase 2) and leave sentiment empty.
    - Comments: `GET /rest/servicedeskapi/request/{key}/comment` (each comment says whether it is public and who wrote it). The API does not say whether the author is an agent, so set `is_agent` by comparing the author's `accountId` with your own (Phase 0 step 10). Internal notes from the triage and refund helpers are posted with your token too; they are not public, so the first response metric skips them.
    - SLAs, if your plan has them: `GET /rest/servicedeskapi/request/{key}/sla`.
    - Dates come back in several formats. Use the ISO 8601 one and store UTC.
@@ -455,10 +459,10 @@ The hackathon deadline sets the order: Phases 0 to 3B come first, and Phases 4 a
 | Risk | What to do |
 |---|---|
 | JSM Free plan missing or changed | Use Zammad in Docker. Same phases, different API calls |
-| No Customer service template on the Free plan | Use General service management (Phase 0 step 2) |
+| An API call fails with a permission error | Make sure the token's account is the site admin and one of the 3 agents (Phase 0 step 7) |
 | Setting priority through the API fails | Add Priority to the project's issue screen (Phase 3 step 4) |
 | Knowledge base pushes a paid Confluence trial | Decline. Keep articles in `kb/articles.md` and publish them in the README until you find the free path |
-| SLAs not on the Free plan | Skip step 0.5. Your SQL calculates response and resolution times anyway |
+| SLAs not on the Free plan | Skip Phase 0 step 5. Your SQL calculates response and resolution times anyway |
 | `raiseOnBehalfOf` errors | Add the customer to the service desk first (Phase 2, step 2) |
 | Triage accuracy is low | Report it honestly. Then improve the article list and category descriptions, and score again on held out tickets |
 | API search returns nothing | Check that the JQL works in the Jira search bar first, then copy it exactly |
@@ -481,16 +485,18 @@ All calls use basic auth with your email and API token. Base URL is your site.
 | Create ticket | `POST /rest/servicedeskapi/request` |
 | Read or add comments | `GET` or `POST /rest/servicedeskapi/request/{key}/comment` |
 | SLA info | `GET /rest/servicedeskapi/request/{key}/sla` |
-| Search tickets | `GET /rest/api/3/search/jql` (pages with `nextPageToken`) |
+| Search tickets | `GET /rest/api/3/search/jql` (pages with `nextPageToken`; always pass `fields` and keep `project = SUP` in the JQL) |
 | Edit labels, priority | `PUT /rest/api/3/issue/{key}` |
-| Search help articles | `GET /rest/servicedeskapi/knowledgebase/article?query=...` (if it errors, match against `kb/index.csv` instead) |
+| Your own account id | `GET /rest/api/3/myself` |
+| List fields (find the Request Type field id) | `GET /rest/api/3/field` |
+| Search help articles | `GET /rest/servicedeskapi/knowledgebase/article?query=...&highlight=false` (`highlight` is required; if the call errors, match against `kb/index.csv` instead) |
 
 **PayPal, sandbox base URL `https://api-m.sandbox.paypal.com`:**
 
 | Purpose | Call |
 |---|---|
 | Get an access token | `POST /v1/oauth2/token`, basic auth with client id and secret, body `grant_type=client_credentials` |
-| Create an order | `POST /v2/checkout/orders` (intent `CAPTURE`; with a card `payment_source` it completes in one step) |
+| Create an order | `POST /v2/checkout/orders` (intent `CAPTURE`; with a card `payment_source` it completes in one step, and then the `PayPal-Request-Id` header is required) |
 | Capture an approved order | `POST /v2/checkout/orders/{order_id}/capture` |
 | Look up a payment | `GET /v2/payments/captures/{capture_id}` |
 | Refund (full: empty body; partial: send `amount`) | `POST /v2/payments/captures/{capture_id}/refund` with header `PayPal-Request-Id` |
@@ -504,12 +510,12 @@ Atlassian docs: developer.atlassian.com, then Jira Service Management Cloud REST
 
 **Due Thursday November 12, 2026, 3:00 PM New York time. Aim to submit by November 10.**
 
-1. **Secret check before anything goes public.**
+1. **Secret check.** The repo is already public, so run this before every push that adds code, and once more before submitting.
    - Scan the whole history with gitleaks (free, open source, from its GitHub releases page): `gitleaks git .` must report no leaks. A plain text search such as `findstr` also matches every harmless `token()` call, so it is too noisy to trust.
    - Confirm `.env` was never committed: `git log --all -- .env` must print nothing.
    - If a key ever appeared in a commit, revoke it and make a new one. Deleting the line is not enough, because history keeps it.
-2. **Add the license.** Put an MIT `LICENSE` file in the repo root. After pushing, check that GitHub shows "MIT license" in the About box on the right. That is a hackathon rule.
-3. **Create the public GitHub repo and push.** Tell Claude when you are ready. It will not create or publish a repo without your OK.
+2. **Check the license.** The MIT `LICENSE` file was added on October 6. Confirm it is still in the repo root and that GitHub shows "MIT license" in the About box on the right. That is a hackathon rule.
+3. **Push the final state.** The public repo already exists (`github.com/shubhampuri264-cell/Support_desk`). Claude pushes only after you approve each push.
 4. **README for judges:**
    - the problem and who it is for (small service businesses and the person handling refunds);
    - how it works, with a diagram (ticket, then AI claim reading, then PayPal lookup, then guardrails, then proposal, then human approval, then refund);
