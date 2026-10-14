@@ -6,6 +6,8 @@ Drafts of every help article before it goes into the JSM knowledge base. Article
 
 Checked against the Salon website code on October 6, 2026. Every item still needs a check on the live site, because the deployed version or the owner's settings in the admin page can differ from the code.
 
+Live-site check done on October 14, 2026: labels, prices, Iris buttons and pages checked read-only on iconht.studio, and bookings, cancellations, moves, emails, admin and phones tested by the user. The reminder cron timing (KB-07) was confirmed in Vercel Observability. The site changes that came out of the checks are in `docs/salon-site-fixes.md`.
+
 ### What the site does
 
 | Feature | How it works |
@@ -41,20 +43,20 @@ Checked against the Salon website code on October 6, 2026. Every item still need
 
 Before a test booking, tell the owner or block the slot. A real booking lands on her calendar and sends her an alert, and every email counts against the site's daily email limit. Cancel any test booking right after.
 
-- [ ] Booking: four steps, stylist step skipped for a one-stylist service, reference number on the confirmation page
-- [ ] Confirmation email arrives, from which address, and how long it takes; check the spam folder
-- [ ] Cancel through the email link
-- [ ] Signed in: profile shows the appointment with Cancel and Resend Email
-- [ ] Iris: book, My appointments, cancel, reschedule while signed in, prices, offers, hours and location, message the salon
-- [ ] Iris as a guest: the reschedule refusal message
-- [ ] Contact form sends
-- [ ] Hours and prices on the site match the table above
-- [ ] Admin tabs (only with the owner's login, or ask her)
+- [x] Booking: four steps, stylist step skipped for a one-stylist service, reference number on the confirmation page (confirmed by the user, October 14, 2026)
+- [x] Confirmation email arrives, from which address, and how long it takes; check the spam folder (confirmed by the user, October 14, 2026)
+- [x] Cancel through the email link (confirmed by the user, October 14, 2026)
+- [x] Signed in: profile shows the appointment with Cancel and Resend Email (confirmed by the user, October 14, 2026)
+- [x] Iris: book, My appointments, cancel, reschedule while signed in, prices, offers, hours and location, message the salon (confirmed by the user, October 14, 2026)
+- [x] Iris as a guest: the reschedule refusal message (checked October 14, 2026; wording in KB-03)
+- [x] Contact form sends (confirmed by the user, October 14, 2026)
+- [x] Hours and prices on the site match the table above (checked October 14, 2026). The Location page and Iris show 10:00 AM to 7:30 PM, Sunday to 6:00 PM. The home page still also says "Every day, 10am to 8pm" (second code check, item 1)
+- [x] Admin tabs (confirmed by the user, October 14, 2026)
 - [x] Vercel production settings: customer emails reach customers, so `EMAIL_DEV_OVERRIDE` is not redirecting them and `RESEND_API_KEY` is set (verified October 7, 2026). The sender address is still checked in KB-07
 - [x] Owner's inbox: customers receive their booking, cancellation and reschedule emails, and the owner receives hers at her business inbox (verified October 7, 2026)
 - [x] Iris is deployed and works on the live site, with typing on and its safeguards in place (confirmed October 7, 2026)
-- [ ] Iris runs from the Supabase chat function, which is deployed on its own (`npm run deploy:chat`), so `origin/main` does not prove what Iris says. Compare Iris's live replies with the wording in KB-03 to KB-06
-- [ ] Work through the **Live check** list at the end of each article below
+- [x] Iris runs from the Supabase chat function, which is deployed on its own (`npm run deploy:chat`), so `origin/main` does not prove what Iris says. Compare Iris's live replies with the wording in KB-03 to KB-06 (confirmed by the user, October 14, 2026)
+- [x] Work through the **Live check** list at the end of each article below (done October 14, 2026)
 
 ### Article list after the check
 
@@ -103,6 +105,8 @@ Found while checking the article drafts against the code (SalonWebsite `bb7f960`
 9. **The admin Promotions screen says offers appear "on the site"** ("Offers shown on the site…", "it appears on the site straight away", `client/src/pages/admin/AdminPromotions.tsx:176` and `:285`), but only Iris shows them.
 10. **A blank promotion start date uses the database's UTC date.** Iris and the admin badge use the New York date, so a promotion saved in the evening (after 8 PM in summer time, 7 PM in winter) with **Starts** left blank shows as **Scheduled** and stays out of Iris until midnight (`supabase/migrations/017_promotions.sql:47`).
 
+Still on the live site on October 14, 2026: items 1 (both hour lines are on the home page), 2, 4 and 11.
+
 Found from the owner's answers (October 7, 2026):
 
 11. **The booking form warns of a fee the salon does not charge.** The cancellation policy box says cancelling within 24 hours "may be subject to a late cancellation fee" (`client/src/components/BookingWizard/StepContact.tsx:198`). The owner confirmed there is no cancellation fee, so customers who cancel late may worry about a charge that never comes.
@@ -150,11 +154,11 @@ Raise a **Booking problem** request. Tell us the service, the date and time you 
 
 #### Live check (remove before publishing)
 
-- [ ] iconht.studio/book loads, and steps 2 to 9 match the live labels
-- [ ] Make one test booking (tell the owner first, cancel it after): **Booking Confirmed!** shows a **Booking ref**, and the confirmation email arrives. Note the sender, how long it took, and whether it landed in spam
-- [ ] Which services skip **Choose a Stylist** live. This comes from the stylist links in the database, not the code
+- [x] iconht.studio/book loads, and steps 2 to 8 match the live labels (checked October 14, 2026, without submitting). Step 9 is covered by the test booking below
+- [x] Make one test booking (tell the owner first, cancel it after): **Booking Confirmed!** shows a **Booking ref**, and the confirmation email arrives. Note the sender, how long it took, and whether it landed in spam (confirmed by the user, October 14, 2026)
+- [x] Which services skip **Choose a Stylist** live (checked October 14, 2026): Balayage goes straight to **Pick a Date & Time** with Sumita Karki; Hot Oil Hair Massage shows both stylists
 - [x] **Ask Iris** shows on the live site (the "book through the chat assistant" line depends on it). Iris is live (confirmed October 7, 2026)
-- [ ] Optional, only with the owner's OK: a fourth booking with the same email in 24 hours shows **Something went wrong. Please try again.** If engineering fixes that message first (second code check, item 3), update this article
+- [x] Skipped (October 14, 2026): optional, and it would use up live limits. A fourth booking with the same email in 24 hours shows **Something went wrong. Please try again.** If engineering fixes that message first (second code check, item 3), update this article
 
 ---
 
@@ -175,7 +179,7 @@ Raise a **Booking problem** request. Tell us the service, the date and time you 
 - Hair services are with our hair stylist. Threading, waxing, facials, lashes and brows are with our threading and facial specialist. A few services, such as Hot Oil Hair Massage, are offered by both, so you pick.
 - There is no "anyone available" option. Pick a stylist, then choose from their open times.
 - A price range such as **$200–300** depends on your hair length and texture. **Price on consultation** means the stylist quotes in the salon.
-- The booking page shows prices but not how long each service takes. Tap **Prices** in Iris to see the length of each service, or ask us.
+- The booking page shows prices but not how long each service takes. To see the length, tap **Prices** in Iris, then a group such as **Hair Services**, then the service. Iris shows its price and length, then offers days to book. Nothing is booked unless you carry on and confirm.
 - The **Special Offer** banner on the booking page: eyebrow threading is free with any facial or special treatment service.
 - If you see **We can't book [service] online right now. Please call us**, that service can only be booked by phone for now: call (718) 255-6940.
 
@@ -185,12 +189,12 @@ Not sure which service to book? Raise a **General question** request. A service 
 
 #### Live check (remove before publishing)
 
-- [ ] Category headings on the live booking page match step 2
-- [ ] Hot Oil Hair Massage shows **Choose a Stylist** with both stylists, and the hair services go straight to **Pick a Date & Time**. Both depend on the stylist links in the database
-- [ ] The **$200–300** example is still a live price (the code's data has it for Balayage). If not, swap in a range that is
-- [ ] Which services show **Price on consultation** (in the code's data, only Cut and Style)
-- [ ] Iris's **Prices** list shows "· N min" next to each service
-- [ ] Ask the owner whether the threading offer still runs, since the banner is fixed in the code
+- [x] Category headings on the live booking page match step 2: Hair Services, Threading Services, Waxing Services, Facial Services, Special Treatments, shown in capitals (checked October 14, 2026)
+- [x] Hot Oil Hair Massage shows **Choose a Stylist** with Sazana Aryal and Sumita Karki, and Balayage goes straight to **Pick a Date & Time** (checked October 14, 2026)
+- [x] The **$200–300** example is still a live price, for Balayage (checked October 14, 2026)
+- [x] Only Cut and Style shows **Price on consultation** (checked October 14, 2026)
+- [x] Iris's **Prices** list shows only name and price, such as "Balayage · $200–$300". The length appears after tapping the service ("$200–$300 · 180 min"), and Iris then offers days to book. The **Good to know** line was rewritten to match (checked October 14, 2026)
+- [x] Ask the owner whether the threading offer still runs, since the banner is fixed in the code (confirmed by the user, October 14, 2026)
 
 ---
 
@@ -234,10 +238,10 @@ Raise a **Reschedule or cancel** request with your name, your booking reference,
 
 #### Live check (remove before publishing)
 
-- [ ] Signed in: move a test booking with Iris end to end (steps 1 to 8), and the **Your Icon Studio Appointment Has Moved** email arrives
-- [ ] As a guest: Iris refuses to move and points to the email link. Note its exact words
-- [ ] Click **Cancel appointment** in a real confirmation email: it opens iconht.studio/booking/cancel with a token, then **Confirm Cancellation** and **Book a New Appointment** appear. The confirmation email builds this link slightly differently from the other emails, so a real click is the only proof
-- [ ] **Sign In** and **Ask Iris** appear where the steps say, on a computer and on a phone
+- [x] Signed in: move a test booking with Iris end to end (steps 1 to 8), and the **Your Icon Studio Appointment Has Moved** email arrives (confirmed by the user, October 14, 2026)
+- [x] As a guest: Iris refuses to move and points to the email link (checked October 14, 2026). Its words: "To move an appointment I'll need you signed in. Otherwise you can cancel using the link in your confirmation email and book again, or call the salon." Its **Sign in** button still goes to `/profile` (second code check, item 4)
+- [x] Click **Cancel appointment** in a real confirmation email: it opens iconht.studio/booking/cancel with a token, then **Confirm Cancellation** and **Book a New Appointment** appear. The confirmation email builds this link slightly differently from the other emails, so a real click is the only proof (confirmed by the user, October 14, 2026)
+- [x] **Sign In** and **Ask Iris** appear where the steps say. Computer: **Sign In** top right, **Ask Iris** bottom right (checked October 14, 2026). Phone: confirmed by the user, October 14, 2026
 
 ---
 
@@ -285,10 +289,10 @@ Raise a **Reschedule or cancel** request with your name, phone number and the da
 #### Live check (remove before publishing)
 
 - [x] Owner: no cancellation fee (confirmed October 7, 2026). The **Good to know** list now says so. The booking form still warns of a possible late fee (second code check, item 11), so expect a few customers to ask until engineering changes that wording
-- [ ] Cancel a test booking through the email link: **Confirm Cancellation**, then **Appointment Cancelled**, then the cancellation email arrives
-- [ ] Open the same link again and see **Already Cancelled**
-- [ ] Profile cancel on an iPhone and an Android phone: the pop-up is the browser's own, so its button names may differ from **OK** and **Cancel**. After OK, the row moves to **Past Appointments**
-- [ ] Iris cancel: one tap cancels, and the reply matches step 4. If engineering adds a confirm step (second code check, item 7), rewrite the Iris steps
+- [x] Cancel a test booking through the email link: **Confirm Cancellation**, then **Appointment Cancelled**, then the cancellation email arrives (confirmed by the user, October 14, 2026)
+- [x] Open the same link again and see **Already Cancelled** (confirmed by the user, October 14, 2026)
+- [x] Profile cancel on an iPhone and an Android phone: the pop-up is the browser's own, so its button names may differ from **OK** and **Cancel**. After OK, the row moves to **Past Appointments** (confirmed by the user, October 14, 2026)
+- [x] Iris cancel: one tap cancels, and the reply matches step 4. If engineering adds a confirm step (second code check, item 7), rewrite the Iris steps (confirmed by the user, October 14, 2026)
 
 ---
 
@@ -322,8 +326,8 @@ Raise a **Chat assistant (Iris) question** request. Tell us what you typed or ta
 #### Live check (remove before publishing)
 
 - [x] **Ask Iris** shows on the live site (confirmed October 7, 2026). Still glance that it sits at the bottom right, as step 1 says
-- [ ] Book a test appointment through Iris (tell the owner, cancel after): **Review booking**, **Confirm booking**, **You're booked in.** and the confirmation email
-- [ ] What **Current offers** shows today. With no promotions, the database may hold a placeholder card titled "No current offers", or Iris says "There aren't any offers running at the moment."
+- [x] Book a test appointment through Iris (tell the owner, cancel after): **Review booking**, **Confirm booking**, **You're booked in.** and the confirmation email (confirmed by the user, October 14, 2026)
+- [x] What **Current offers** shows today (checked October 14, 2026): "Here's what's on at the moment." and a placeholder card, **No current offers** / "No promotions are running right now."
 - [x] Typing works on the live site, with its safeguards in place (confirmed October 7, 2026)
 
 ---
@@ -356,9 +360,9 @@ Raise a **Chat assistant (Iris) question** request with what you asked and rough
 #### Live check (remove before publishing)
 
 - [x] Typing is on, with its safeguards in place (confirmed October 7, 2026), so KB-05's "or type your question" stands
-- [ ] The unavailable message reads exactly as in "Who this is for", with the dash
-- [ ] A new tab starts a fresh chat with the main buttons
-- [ ] Optional: send 6 typed messages within a minute, see the limit message, then tap a button and check typing comes back
+- [x] The unavailable message reads exactly as in "Who this is for", with the dash. It matches `client/src/components/chat/ChatPanel.tsx:143`, which deploys with the website (October 14, 2026)
+- [x] A new tab starts a fresh chat with the main buttons. Reloading the same tab keeps the old chat (checked October 14, 2026)
+- [x] Skipped (October 14, 2026): optional, and it would use up live limits. Send 6 typed messages within a minute, see the limit message, then tap a button and check typing comes back
 
 ---
 
@@ -390,11 +394,11 @@ Raise a **Confirmation email not received** request with your name, phone number
 #### Live check (remove before publishing)
 
 - [x] Customers receive their own emails, not redirected to the owner (verified October 7, 2026)
-- [ ] The sender in step 2 is right. The code defaults to `Icon Studio <noreply@iconht.studio>`, but the site settings can change it
-- [ ] Test booking emails reach a Gmail and an Outlook inbox, not spam. Note how long they take, and change step 1 if "a few minutes" is wrong
-- [ ] **Resend Email** on a signed-in test booking: the button shows **Sent ✓**, a second email arrives, and a second click within 5 minutes (after reloading the page) shows the pop-up
-- [ ] Reminder timing: the Vercel cron log shows when reminders really run. The schedule is 13:00 UTC, which is 9 AM New York time now and 8 AM after November 1, but on the Hobby plan a cron can fire any time in that hour
-- [ ] The Resend dashboard: the free plan sends 100 emails a day, and the site only logs a `[quota]` warning in Vercel as it gets close. Check recent days stayed under it, and look for bounces
+- [x] The sender in step 2 is right. The code defaults to `Icon Studio <noreply@iconht.studio>`, but the site settings can change it (confirmed by the user, October 14, 2026)
+- [x] Test booking emails reach a Gmail and an Outlook inbox, not spam. Note how long they take, and change step 1 if "a few minutes" is wrong (confirmed by the user, October 14, 2026)
+- [x] **Resend Email** on a signed-in test booking: the button shows **Sent ✓**, a second email arrives, and a second click within 5 minutes (after reloading the page) shows the pop-up (confirmed by the user, October 14, 2026)
+- [x] Reminder timing (checked October 14, 2026, in Vercel Observability for `/api/cron/reminders`): one run in the last 12 hours, between 9:00 and 9:05 AM New York time (13:00 to 13:05 UTC), status 2xx, 0% errors, one call to Resend. The schedule in `vercel.json` is 13:00 UTC (9 AM now, 8 AM after November 1), so KB-07's "the morning of the day before" holds
+- [x] Skipped: no access to the Resend dashboard (October 14, 2026). Search the Vercel logs for `[quota]` instead. Emails are verified working
 
 ---
 
@@ -429,7 +433,7 @@ For anything else about getting here, raise a **General question** request or ca
 
 - [x] Owner confirmed closing at 7:30 PM Monday to Saturday and 6:00 PM on Sunday (October 7, 2026), matching the table. The home page's "Every day, 10am to 8pm" is wrong (second code check, item 1). The 10:00 AM opening comes from the code; she did not contradict it
 - [x] Owner confirmed walk-ins are welcome (October 7, 2026)
-- [ ] The address link on the Location page opens the right pin in Google Maps
+- [x] The address link on the Location page points to the Google Maps place "Icon studios", 39-46 Queens Blvd, Sunnyside (checked October 14, 2026)
 
 ---
 
@@ -466,9 +470,9 @@ Raise a **General question** request, or call (718) 255-6940.
 #### Live check (remove before publishing)
 
 - [x] Owner is happy to list ks@iconht.studio here (confirmed October 7, 2026)
-- [ ] Send a test contact form message: **Message Sent!** shows, it reaches the owner's inbox, and replying goes to the address you typed
-- [ ] Send a test message through Iris and confirm it arrives. Iris may share one limit of 3 messages an hour across all its users (second code check, item 5); if a second device fails soon after, keep the **I couldn't send that just now** line
-- [ ] With typing off, how a customer reaches **Message the salon** (it only appears after Iris cannot help). If it is hard to find, point customers to the contact form instead
+- [x] Send a test contact form message: **Message Sent!** shows, it reaches the owner's inbox, and replying goes to the address you typed (confirmed by the user, October 14, 2026)
+- [x] Send a test message through Iris and confirm it arrives. Iris may share one limit of 3 messages an hour across all its users (second code check, item 5); if a second device fails soon after, keep the **I couldn't send that just now** line (confirmed by the user, October 14, 2026)
+- [x] With typing off, how a customer reaches **Message the salon** (it only appears after Iris cannot help). If it is hard to find, point customers to the contact form instead (confirmed by the user, October 14, 2026)
 
 ---
 
@@ -518,7 +522,7 @@ Send support the service or promotion name and what you expected to see.
 
 Only with the owner's login, or ask her to do it. Do not add a test service: it appears on the live menu straight away.
 
-- [ ] **Owner Login** in the footer opens iconht.studio/admin/login, and the tabs match
-- [ ] The **Add Service** and **Add Promotion** forms show the labels above
-- [ ] Whether a **No current offers** placeholder is in the Promotions list today
-- [ ] With the owner: add a real promotion, check it appears under **Current offers** in Iris, and check it does not appear on any website page
+- [x] **Owner Login** in the footer links to iconht.studio/admin/login (checked October 14, 2026), and the admin tabs match (confirmed by the user, October 14, 2026)
+- [x] The **Add Service** and **Add Promotion** forms show the labels above (confirmed by the user, October 14, 2026)
+- [x] A **No current offers** placeholder is in the Promotions list and showing: Iris displays it under **Current offers** (checked October 14, 2026), so step 9 applies
+- [x] With the owner: add a real promotion, check it appears under **Current offers** in Iris, and check it does not appear on any website page (confirmed by the user, October 14, 2026)
