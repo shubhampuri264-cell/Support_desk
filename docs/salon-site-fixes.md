@@ -4,6 +4,8 @@ Changes for the SalonWebsite repo, found while checking the help articles (issue
 
 The live-site checks themselves are finished, including the reminder cron timing (see the end of this file).
 
+**Status, October 14, 2026:** every fix except 6 shipped in SalonWebsite `acfbbc9`. Vercel deployed it, Iris was redeployed for fix 7, and `kb/articles.md` was updated to match. Fix 6 was dropped (see its section).
+
 ## How each fix reaches the live site
 
 - **Website and API** (`client/`, `api/`, `packages/`): push to `main` and Vercel deploys it.
@@ -12,19 +14,19 @@ The live-site checks themselves are finished, including the reminder cron timing
 
 ## Summary
 
-| # | Fix | Who sees it | Where | Deploy |
-|---|---|---|---|---|
-| 11 | Booking form warns of a fee the salon does not charge | Customers | `client/src/components/BookingWizard/StepContact.tsx:197-198` | Website |
-| 1 | Home page says "Every day, 10am to 8pm" | Customers | `client/src/pages/Home.tsx:47` | Website |
-| 2 | Home page promises rescheduling on the website | Customers | `client/src/pages/Home.tsx:46`, `:243` | Website |
-| 3 | Daily booking limit shows a generic error | Customers | `client/src/components/BookingWizard/StepContact.tsx:70-78` | Website |
-| 7 | Iris cancels with one tap, no confirm | Customers | `supabase/functions/chat/handlers.ts:856-892` | Iris |
-| 4 | Iris **Sign in** button sends guests to the home page | Customers | `client/src/components/chat/ContactForm.tsx:203-218` | Website |
-| 8 | Moving a booking does not reset its reminder | Customers | `api/_lib/booking.ts:446-448` | Website |
-| 5 | Iris **Message the salon** shares one rate limit across all users | Customers | `api/contact.ts:42` | Website |
-| 9 | Admin Promotions screen says offers show "on the site" | Owner | `client/src/pages/admin/AdminPromotions.tsx:176`, `:285` | Website |
-| 10 | Promotion with a blank start date saved in the evening shows as Scheduled | Owner | `api/admin/services.ts:193-195` | Website |
-| 6 | Guest bookings never join an account made later | Customers | `api/customer/appointments.ts` | Website (needs a decision first) |
+| # | Fix | Who sees it | Where | Deploy | Status |
+|---|---|---|---|---|---|
+| 11 | Booking form warns of a fee the salon does not charge | Customers | `client/src/components/BookingWizard/StepContact.tsx:197-198` | Website | Live |
+| 1 | Home page says "Every day, 10am to 8pm" | Customers | `client/src/pages/Home.tsx:47` | Website | Live |
+| 2 | Home page promises rescheduling on the website | Customers | `client/src/pages/Home.tsx:46`, `:243` | Website | Live |
+| 3 | Daily booking limit shows a generic error | Customers | `client/src/components/BookingWizard/StepContact.tsx:70-78` | Website | Live |
+| 7 | Iris cancels with one tap, no confirm | Customers | `supabase/functions/chat/handlers.ts:856-892` | Iris | Live |
+| 4 | Iris **Sign in** button sends guests to the home page | Customers | `client/src/components/chat/ContactForm.tsx:203-218` | Website | Live |
+| 8 | Moving a booking does not reset its reminder | Customers | `api/_lib/booking.ts:446-448` | Website | Live |
+| 5 | Iris **Message the salon** shares one rate limit across all users | Customers | `api/contact.ts:42` | Website | Live |
+| 9 | Admin Promotions screen says offers show "on the site" | Owner | `client/src/pages/admin/AdminPromotions.tsx:176`, `:285` | Website | Live |
+| 10 | Promotion with a blank start date saved in the evening shows as Scheduled | Owner | `api/admin/services.ts:193-195` | Website | Live |
+| 6 | Guest bookings never join an account made later | Customers | `api/customer/appointments.ts` | Website (needs a decision first) | Dropped |
 
 Suggested order: 11, 1 and 2 first (wrong information on the live site, text-only changes), then 3, 7 and 4, then the rest.
 
@@ -99,6 +101,8 @@ Suggested order: 11, 1 and 2 first (wrong information on the live site, text-onl
 
 Keep the existing ownership check in `handleCancelAppointment` as it is. Deploy with `npm run deploy:chat`.
 
+**Shipped (`acfbbc9`):** the card's **Cancel** button still sends `cancel_appointment`, which now asks; a new `cancel_confirm` intent does the cancelling. The button itself did not change, so the fix needed only the Iris deploy.
+
 **Articles after the fix:**
 
 - KB-04, "With Iris" steps: step 3 becomes "Tap **Cancel** on the appointment.", then a new step 4 "Tap **Yes, cancel it**.", then step 5 is the current step 4.
@@ -163,6 +167,8 @@ if (!(await enforceRateLimit(req, res, 'contact', rateLimitIdentity(req)))) retu
 
 The global daily contact cap (`contactGlobal`) stays as it is.
 
+**Shipped (`acfbbc9`):** `rateLimitIdentity` moved to `api/_lib/auth.ts`, and both `api/appointments.ts` and `api/contact.ts` use it.
+
 **Articles after the fix:** none. KB-09's **I couldn't send that just now** line stays useful for real failures.
 
 ## 9. Admin Promotions screen says offers show "on the site"
@@ -190,9 +196,13 @@ starts_on: starts_on || salonToday(),
 
 No migration is needed.
 
+**Also fixed in `acfbbc9`:** clearing **Starts** while editing a promotion used to fail and now means today, and an **Ends** date before today shows **The end date cannot be before the start date** instead of a database error.
+
 **Articles after the fix:** KB-10, drop the "Adding a promotion in the evening" line.
 
 ## 6. Guest bookings never join an account made later
+
+**Dropped (October 14, 2026).** Email confirmation is off for customer accounts, so anyone could sign up with a customer's email and take over their bookings. Guest bookings stay guest bookings, and the articles keep their guest lines. The notes below are kept for reference.
 
 **Live now:** a booking is linked to an account only if the customer was signed in when they booked (`user_id`, `api/_lib/booking.ts:248`). **My Appointments** lists bookings by `user_id` (`api/customer/appointments.ts:39`). A customer who books as a guest and then creates an account with the same email never sees that booking, and cannot move it with Iris.
 

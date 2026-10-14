@@ -6,7 +6,7 @@ Drafts of every help article before it goes into the JSM knowledge base. Article
 
 Checked against the Salon website code on October 6, 2026. Every item still needs a check on the live site, because the deployed version or the owner's settings in the admin page can differ from the code.
 
-Live-site check done on October 14, 2026: labels, prices, Iris buttons and pages checked read-only on iconht.studio, and bookings, cancellations, moves, emails, admin and phones tested by the user. The reminder cron timing (KB-07) was confirmed in Vercel Observability. The site changes that came out of the checks are in `docs/salon-site-fixes.md`.
+Live-site check done on October 14, 2026: labels, prices, Iris buttons and pages checked read-only on iconht.studio, and bookings, cancellations, moves, emails, admin and phones tested by the user. The reminder cron timing (KB-07) was confirmed in Vercel Observability. The site changes that came out of the checks are in `docs/salon-site-fixes.md`. All but one went live on October 14, 2026 (SalonWebsite `acfbbc9`), and the articles below were updated to match.
 
 ### What the site does
 
@@ -16,9 +16,9 @@ Live-site check done on October 14, 2026: labels, prices, Iris buttons and pages
 | Required details | Full name, email, phone (digits, spaces, `-`, `+`, `()`), and a ticked cancellation policy box. Notes and the marketing opt-in are optional |
 | Availability | Start times every 30 minutes from opening. The whole service must end by closing time. Bookable up to 180 days ahead, with no minimum notice; the calendar greys out later dates. Times are the salon's New York time, whatever the visitor's time zone. A day with no times shows the reason (date passed, beyond 180 days, salon closed) or "No availability on this date". A time is taken only if it overlaps another booking or a slot the owner blocked |
 | Confirmation | The page shows "Booking Confirmed!" with the date, time and an 8 character booking reference. A confirmation email follows. Bookings are confirmed immediately |
-| Cancelling | The cancel link in the confirmation email (with a "Confirm Cancellation" click), the profile page for signed-in customers, or Iris. No cutoff is enforced. The booking form says cancelling under 24 hours ahead "may be subject to a late cancellation fee", but nothing charges it. The owner confirmed on October 7, 2026 that the salon charges no cancellation fee |
-| Rescheduling | Signed-in customers: through Iris, to a new date and time with the same service and stylist. Guests: through the link in the confirmation email. In the code, that link is "Cancel appointment", and the cancellation email then offers "Book a new appointment", so a guest moves a booking in two steps. The live-site check confirms whether the deployed site does it in one step. The profile page has no reschedule button |
-| Iris chat assistant | Books, shows "My appointments", cancels, reschedules, and shows prices, service details, offers, hours and location. It can also pass a message to the salon. Bookings and moves only happen when the customer taps a confirm button, and a confirm card expires after 10 minutes. Cancelling has no confirm step: the **Cancel** button on an appointment card cancels at once |
+| Cancelling | The cancel link in the confirmation email (with a "Confirm Cancellation" click), the profile page for signed-in customers, or Iris. No cutoff is enforced. The owner confirmed on October 7, 2026 that the salon charges no cancellation fee. The booking form asks customers to cancel at least 24 hours ahead if they can, and mentions no fee |
+| Rescheduling | Signed-in customers: through Iris, to a new date and time with the same service and stylist. Guests: through the link in the confirmation email. In the code, that link is "Cancel appointment", and the cancellation email then offers "Book a new appointment", so a guest moves a booking in two steps. The live-site check confirmed the two steps. The profile page has no reschedule button |
+| Iris chat assistant | Books, shows "My appointments", cancels, reschedules, and shows prices, service details, offers, hours and location. It can also pass a message to the salon. Bookings, moves and cancellations only happen when the customer taps a confirm button, and a booking's confirm card expires after 10 minutes |
 | Iris buttons | Book an appointment, My appointments, Prices, Current offers, Hours & location, Start over, and a Call button. When typed messages are unavailable, the message box reads "Typed messages are unavailable right now, the buttons above still work" |
 | Emails | Booking confirmation, cancellation, "Your Appointment Has Moved" after a reschedule, a reminder the day before, a review request the day after (only if the owner set a review link), contact form copies and password resets |
 | Text messages | **None.** The code has unused settings for a text provider, but sends no texts |
@@ -50,7 +50,7 @@ Before a test booking, tell the owner or block the slot. A real booking lands on
 - [x] Iris: book, My appointments, cancel, reschedule while signed in, prices, offers, hours and location, message the salon (confirmed by the user, October 14, 2026)
 - [x] Iris as a guest: the reschedule refusal message (checked October 14, 2026; wording in KB-03)
 - [x] Contact form sends (confirmed by the user, October 14, 2026)
-- [x] Hours and prices on the site match the table above (checked October 14, 2026). The Location page and Iris show 10:00 AM to 7:30 PM, Sunday to 6:00 PM. The home page still also says "Every day, 10am to 8pm" (second code check, item 1)
+- [x] Hours and prices on the site match the table above (checked October 14, 2026). The Location page and Iris show 10:00 AM to 7:30 PM, Sunday to 6:00 PM. The home page's **Open 7 Days** card said "Every day, 10am to 8pm" (second code check, item 1) until the fix on October 14, 2026; it now shows the same hours
 - [x] Admin tabs (confirmed by the user, October 14, 2026)
 - [x] Vercel production settings: customer emails reach customers, so `EMAIL_DEV_OVERRIDE` is not redirecting them and `RESEND_API_KEY` is set (verified October 7, 2026). The sender address is still checked in KB-07
 - [x] Owner's inbox: customers receive their booking, cancellation and reschedule emails, and the owner receives hers at her business inbox (verified October 7, 2026)
@@ -76,7 +76,7 @@ Before a test booking, tell the owner or block the slot. A real booking lands on
 These come from the code and make realistic tickets. The labels in `data/tickets_seed.csv` stay yours.
 
 1. A guest asks how to move an appointment they booked without an account.
-2. A customer created an account after booking as a guest and cannot see the booking under "My appointments".
+2. A customer created an account after booking as a guest and cannot see the booking under "My appointments". This stays by design (second code check, item 6).
 3. A same-day booking, or a next-day booking made after the morning email run, gets no reminder.
 4. A family hits the limit of 3 online bookings a day per email or phone.
 5. A customer sees "We can't book X online right now" for a new service.
@@ -105,11 +105,11 @@ Found while checking the article drafts against the code (SalonWebsite `bb7f960`
 9. **The admin Promotions screen says offers appear "on the site"** ("Offers shown on the site…", "it appears on the site straight away", `client/src/pages/admin/AdminPromotions.tsx:176` and `:285`), but only Iris shows them.
 10. **A blank promotion start date uses the database's UTC date.** Iris and the admin badge use the New York date, so a promotion saved in the evening (after 8 PM in summer time, 7 PM in winter) with **Starts** left blank shows as **Scheduled** and stays out of Iris until midnight (`supabase/migrations/017_promotions.sql:47`).
 
-Still on the live site on October 14, 2026: items 1 (both hour lines are on the home page), 2, 4 and 11.
-
 Found from the owner's answers (October 7, 2026):
 
 11. **The booking form warns of a fee the salon does not charge.** The cancellation policy box says cancelling within 24 hours "may be subject to a late cancellation fee" (`client/src/components/BookingWizard/StepContact.tsx:198`). The owner confirmed there is no cancellation fee, so customers who cancel late may worry about a charge that never comes.
+
+Status on October 14, 2026: items 1 to 5 and 7 to 11 are fixed in SalonWebsite `acfbbc9` and live. Items 1, 2, 4, 9 and 11, and the new end date message from item 10, were checked on iconht.studio. Items 3, 5, 7, 8 and the rest of item 10 were checked in the code, because testing them live needs real bookings or the owner's login. Item 6 was dropped: email confirmation is off for customer accounts, so anyone could sign up with a customer's email and take over their bookings. Guest bookings stay guest bookings, so edge case 2 and the guest lines in KB-03 and KB-07 stay.
 
 ## Articles
 
@@ -117,7 +117,7 @@ Each article follows the same shape: a title phrased the way a customer searches
 
 The owner answered on October 7, 2026: the salon charges no cancellation fee (article 4), closes at 7:30 PM Monday to Saturday and 6:00 PM on Sunday (article 8), welcomes walk-ins (article 8), and is happy with the salon's name, address, phone and email appearing in the help center (article 9).
 
-Every label and rule below was checked against the SalonWebsite code at commit `bb7f960` (`origin/main` on October 7, 2026). Each article ends with a **Live check** list: things the code supports but only the live site, a real inbox or the owner can confirm. Tick each item during the live-site check, fix the article if the site differs, and delete the list before pasting the article into JSM.
+Every label and rule below was checked against the SalonWebsite code at commit `bb7f960` (`origin/main` on October 7, 2026), and the lines changed by the October 14 fixes against `acfbbc9`. Each article ends with a **Live check** list: things the code supports but only the live site, a real inbox or the owner can confirm. Tick each item during the live-site check, fix the article if the site differs, and delete the list before pasting the article into JSM.
 
 ---
 
@@ -144,7 +144,7 @@ Every label and rule below was checked against the SalonWebsite code at commit `
 - You can book up to 180 days ahead. Later dates are greyed out on the calendar.
 - Times are the salon's local time (New York). Booking from another time zone? Pick the time you will be at the salon.
 - A date with no free times says so, for example **No availability on this date**. Pick another date.
-- Online booking takes up to 3 bookings in 24 hours with the same email or phone. A fourth shows **Something went wrong. Please try again.** Booking for a larger family or group? Book the first three online and call (718) 255-6940 for the rest.
+- Online booking takes up to 3 bookings in 24 hours with the same email or phone. A fourth shows **You've reached the daily limit for online bookings.** Booking for a larger family or group? Book the first three online and call (718) 255-6940 for the rest.
 - If you see **This time slot was just taken**, someone booked it a moment before you. Go back and pick another time.
 - You can also book through the chat assistant. See KB-05.
 
@@ -158,7 +158,7 @@ Raise a **Booking problem** request. Tell us the service, the date and time you 
 - [x] Make one test booking (tell the owner first, cancel it after): **Booking Confirmed!** shows a **Booking ref**, and the confirmation email arrives. Note the sender, how long it took, and whether it landed in spam (confirmed by the user, October 14, 2026)
 - [x] Which services skip **Choose a Stylist** live (checked October 14, 2026): Balayage goes straight to **Pick a Date & Time** with Sumita Karki; Hot Oil Hair Massage shows both stylists
 - [x] **Ask Iris** shows on the live site (the "book through the chat assistant" line depends on it). Iris is live (confirmed October 7, 2026)
-- [x] Skipped (October 14, 2026): optional, and it would use up live limits. A fourth booking with the same email in 24 hours shows **Something went wrong. Please try again.** If engineering fixes that message first (second code check, item 3), update this article
+- [x] Skipped (October 14, 2026): optional, and it would use up live limits. Since the fix (second code check, item 3), a fourth booking with the same email in 24 hours shows "You've reached the daily limit for online bookings. Please call us on (718) 255-6940 and we'll sort it out." (checked in the code, SalonWebsite `acfbbc9`)
 
 ---
 
@@ -239,7 +239,7 @@ Raise a **Reschedule or cancel** request with your name, your booking reference,
 #### Live check (remove before publishing)
 
 - [x] Signed in: move a test booking with Iris end to end (steps 1 to 8), and the **Your Icon Studio Appointment Has Moved** email arrives (confirmed by the user, October 14, 2026)
-- [x] As a guest: Iris refuses to move and points to the email link (checked October 14, 2026). Its words: "To move an appointment I'll need you signed in. Otherwise you can cancel using the link in your confirmation email and book again, or call the salon." Its **Sign in** button still goes to `/profile` (second code check, item 4)
+- [x] As a guest: Iris refuses to move and points to the email link (checked October 14, 2026). Its words: "To move an appointment I'll need you signed in. Otherwise you can cancel using the link in your confirmation email and book again, or call the salon." Its **Sign in** button opens the **Sign In** pop-up on the same page since the fix (second code check, item 4; checked October 14, 2026)
 - [x] Click **Cancel appointment** in a real confirmation email: it opens iconht.studio/booking/cancel with a token, then **Confirm Cancellation** and **Book a New Appointment** appear. The confirmation email builds this link slightly differently from the other emails, so a real click is the only proof (confirmed by the user, October 14, 2026)
 - [x] **Sign In** and **Ask Iris** appear where the steps say. Computer: **Sign In** top right, **Ask Iris** bottom right (checked October 14, 2026). Phone: confirmed by the user, October 14, 2026
 
@@ -271,8 +271,9 @@ Moved your appointment before? The **Your Icon Studio Appointment Has Moved** em
 
 1. Click **Ask Iris** at the bottom right of the page.
 2. Tap **My appointments**.
-3. Tap **Cancel** on the appointment. Iris cancels it straight away, without asking again.
-4. Look for **That's cancelled, and a confirmation is on its way to your email.**
+3. Tap **Cancel** on the appointment.
+4. When Iris asks **Cancel your [service] on [date] at [time]?**, tap **Yes, cancel it**. **Keep it** leaves the appointment as it is.
+5. Look for **That's cancelled, and a confirmation is on its way to your email.**
 
 **Good to know**
 
@@ -288,11 +289,11 @@ Raise a **Reschedule or cancel** request with your name, phone number and the da
 
 #### Live check (remove before publishing)
 
-- [x] Owner: no cancellation fee (confirmed October 7, 2026). The **Good to know** list now says so. The booking form still warns of a possible late fee (second code check, item 11), so expect a few customers to ask until engineering changes that wording
+- [x] Owner: no cancellation fee (confirmed October 7, 2026). The **Good to know** list now says so. The booking form's late fee warning (second code check, item 11) was replaced on October 14, 2026 and no longer mentions a fee (checked on iconht.studio)
 - [x] Cancel a test booking through the email link: **Confirm Cancellation**, then **Appointment Cancelled**, then the cancellation email arrives (confirmed by the user, October 14, 2026)
 - [x] Open the same link again and see **Already Cancelled** (confirmed by the user, October 14, 2026)
 - [x] Profile cancel on an iPhone and an Android phone: the pop-up is the browser's own, so its button names may differ from **OK** and **Cancel**. After OK, the row moves to **Past Appointments** (confirmed by the user, October 14, 2026)
-- [x] Iris cancel: one tap cancels, and the reply matches step 4. If engineering adds a confirm step (second code check, item 7), rewrite the Iris steps (confirmed by the user, October 14, 2026)
+- [ ] Iris cancel asks first (second code check, item 7, deployed October 14, 2026). Tap **Cancel** on a test booking, check the question and the **Yes, cancel it** and **Keep it** buttons match step 4, tap **Keep it** and check the booking is still there, then cancel with **Yes, cancel it** and check the reply matches step 5. Before the fix, one tap cancelled (confirmed by the user, October 14, 2026)
 
 ---
 
@@ -312,7 +313,7 @@ Iris is the salon's AI assistant. It can book you in, show, move and cancel your
 
 **Good to know**
 
-- Iris books or moves an appointment only when you tap a confirm button. Tapping **Cancel** on an appointment in Iris cancels it straight away.
+- Iris books, moves or cancels an appointment only when you tap a confirm button.
 - A confirm card lasts 10 minutes. If you see **That confirmation has expired or was already used**, nothing was booked twice: start again and pick your time.
 - Sign in first to see or change your appointments in Iris.
 - **Current offers** lists the promotions the salon is running now. The free eyebrow threading offer is on the booking page and may not appear here.
@@ -383,7 +384,7 @@ Raise a **Chat assistant (Iris) question** request with what you asked and rough
 - Your booking is confirmed once you saw **Booking Confirmed!**. The email is a copy of the details and holds your cancel link.
 - **Resend Email** works once every 5 minutes per appointment, and only a few times an hour from the same device. If a pop-up says **Please wait a few minutes before resending again.**, wait and try later.
 - Booked as a guest? Your booking is not under **My Appointments**, even if you create an account later. Contact us (below).
-- A reminder email, **Reminder: Your Icon Studio Appointment is Tomorrow**, goes out the morning of the day before your appointment. A booking made for today, or for tomorrow after that morning's reminders went out, gets no reminder.
+- A reminder email, **Reminder: Your Icon Studio Appointment is Tomorrow**, goes out the morning of the day before your appointment. A booking made for today, or for tomorrow after that morning's reminders went out, gets no reminder. Moved your appointment? The reminder comes the day before the new date.
 - The salon does not send text messages.
 - Think you typed your email wrong? Contact us with the right one.
 
@@ -431,7 +432,7 @@ For anything else about getting here, raise a **General question** request or ca
 
 #### Live check (remove before publishing)
 
-- [x] Owner confirmed closing at 7:30 PM Monday to Saturday and 6:00 PM on Sunday (October 7, 2026), matching the table. The home page's "Every day, 10am to 8pm" is wrong (second code check, item 1). The 10:00 AM opening comes from the code; she did not contradict it
+- [x] Owner confirmed closing at 7:30 PM Monday to Saturday and 6:00 PM on Sunday (October 7, 2026), matching the table. The home page's "Every day, 10am to 8pm" was fixed on October 14, 2026 (second code check, item 1). The 10:00 AM opening comes from the code; she did not contradict it
 - [x] Owner confirmed walk-ins are welcome (October 7, 2026)
 - [x] The address link on the Location page points to the Google Maps place "Icon studios", 39-46 Queens Blvd, Sunnyside (checked October 14, 2026)
 
@@ -471,7 +472,7 @@ Raise a **General question** request, or call (718) 255-6940.
 
 - [x] Owner is happy to list ks@iconht.studio here (confirmed October 7, 2026)
 - [x] Send a test contact form message: **Message Sent!** shows, it reaches the owner's inbox, and replying goes to the address you typed (confirmed by the user, October 14, 2026)
-- [x] Send a test message through Iris and confirm it arrives. Iris may share one limit of 3 messages an hour across all its users (second code check, item 5); if a second device fails soon after, keep the **I couldn't send that just now** line (confirmed by the user, October 14, 2026)
+- [x] Send a test message through Iris and confirm it arrives. Since the fix on October 14, 2026, each visitor has their own limit of 3 messages an hour (second code check, item 5). The **I couldn't send that just now** line stays for real failures (confirmed by the user, October 14, 2026)
 - [x] With typing off, how a customer reaches **Message the salon** (it only appears after Iris cannot help). If it is hard to find, point customers to the contact form instead (confirmed by the user, October 14, 2026)
 
 ---
@@ -510,9 +511,10 @@ Raise a **General question** request, or call (718) 255-6940.
 8. Click **Save Promotion**.
 9. If the list still shows a **No current offers** placeholder, click **Hide** on it so customers see only the real offer.
 
-**Important: promotions show only in Iris,** under **Current offers**. No website page shows them, even though the Promotions screen says offers appear "on the site". The free eyebrow threading banner on the booking page is fixed in the site's code: ask engineering to change or remove it.
+**Important: promotions show only in Iris,** under **Current offers**. No website page shows them. The free eyebrow threading banner on the booking page is fixed in the site's code: ask engineering to change or remove it.
 
-- Adding a promotion in the evening (after 8 PM in summer time, 7 PM in winter)? Pick today's date in **Starts** instead of leaving it blank. A blank start saves as tomorrow at that hour, and the promotion shows **Scheduled** until midnight.
+- A blank **Starts** means today, at any hour.
+- If **Ends** is before the start date (or before today, when **Starts** is blank), the form shows **The end date cannot be before the start date**. Fix the date and save again.
 
 **If it still does not work**
 
