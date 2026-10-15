@@ -101,6 +101,19 @@ def find_customer(email, desk_id):
     return None
 
 
+def find_existing_request(account_id, summary):
+    """Return the key of a ticket this customer already has with this summary.
+
+    Covers a run that created the ticket but lost the response before saving
+    it. Search can lag a few seconds behind a brand new ticket.
+    """
+    jql = f'project = {jsm.project_key()} AND reporter = "{account_id}"'
+    for issue in jsm.search(jql, ["summary"]):
+        if issue["fields"]["summary"].strip() == summary:
+            return issue["key"]
+    return None
+
+
 def ensure_customer(name, email, desk_id, known):
     """Create the customer, or reuse the existing one, and add them to the desk."""
     if email in known:
@@ -155,25 +168,29 @@ def main():
     known = {row["customer_email"]: row["account_id"] for row in seeded.values()}
     for t in todo:
         account_id = ensure_customer(t["customer_name"], t["customer_email"], desk_id, known)
-        created = jsm.post(
-            "/rest/servicedeskapi/request",
-            {
-                "serviceDeskId": desk_id,
-                "requestTypeId": type_ids[t["request_type"]],
-                "requestFieldValues": {"summary": t["summary"], "description": t["description"]},
-                "raiseOnBehalfOf": account_id,
-            },
-        )
+        issue_key = find_existing_request(account_id, t["summary"])
+        if issue_key:
+            print(f"found row {t['id']:>2}: {issue_key} already in JSM, saving it")
+        else:
+            issue_key = jsm.post(
+                "/rest/servicedeskapi/request",
+                {
+                    "serviceDeskId": desk_id,
+                    "requestTypeId": type_ids[t["request_type"]],
+                    "requestFieldValues": {"summary": t["summary"], "description": t["description"]},
+                    "raiseOnBehalfOf": account_id,
+                },
+            )["issueKey"]
+            print(f"made  row {t['id']:>2}: {issue_key}  [{t['request_type']}] {t['summary']}")
         save_seeded(
             {
                 "csv_id": t["id"],
-                "issue_key": created["issueKey"],
+                "issue_key": issue_key,
                 "customer_email": t["customer_email"],
                 "account_id": account_id,
                 "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             }
         )
-        print(f"made  row {t['id']:>2}: {created['issueKey']}  [{t['request_type']}] {t['summary']}")
 
 
 if __name__ == "__main__":

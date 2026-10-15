@@ -7,6 +7,7 @@ Run it directly to check the connection and print the ids Phase 0 asks for:
 """
 import os
 import sys
+import time
 
 import requests
 from dotenv import load_dotenv
@@ -14,6 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TIMEOUT = 30
+CONNECT_RETRIES = 3
 
 
 def env(name, default=None):
@@ -34,15 +36,24 @@ def _request(method, path, params=None, body=None):
         # A few servicedeskapi endpoints (customer search, knowledge base) are
         # still marked experimental and refuse calls without this header.
         headers["X-ExperimentalApi"] = "opt-in"
-    r = requests.request(
-        method,
-        url,
-        auth=(env("JSM_EMAIL"), env("JSM_API_TOKEN")),
-        params=params,
-        json=body,
-        headers=headers,
-        timeout=TIMEOUT,
-    )
+    for attempt in range(CONNECT_RETRIES + 1):
+        try:
+            r = requests.request(
+                method,
+                url,
+                auth=(env("JSM_EMAIL"), env("JSM_API_TOKEN")),
+                params=params,
+                json=body,
+                headers=headers,
+                timeout=TIMEOUT,
+            )
+            break
+        except requests.exceptions.ConnectTimeout:
+            # The connection never opened, so nothing reached Jira and a retry
+            # cannot create anything twice. Read timeouts are not retried.
+            if attempt == CONNECT_RETRIES:
+                raise
+            time.sleep(2 ** attempt)
     if not r.ok:
         raise JSMError(method, path, r.status_code, r.text)
     if r.status_code == 204 or not r.content:
