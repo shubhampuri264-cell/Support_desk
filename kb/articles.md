@@ -119,6 +119,8 @@ The owner answered on October 7, 2026: the salon charges no cancellation fee (ar
 
 Every label and rule below was checked against the SalonWebsite code at commit `bb7f960` (`origin/main` on October 7, 2026), and the lines changed by the October 14 fixes against `acfbbc9`. Each article ends with a **Live check** list: things the code supports but only the live site, a real inbox or the owner can confirm. Tick each item during the live-site check, fix the article if the site differs, and delete the list before pasting the article into JSM.
 
+Published to the JSM knowledge base on October 15, 2026 (issue #7), with the Live check lists left out: KB-01 to KB-09 in the Confluence space Salon Support (SUP, external), KB-10 in Salon Support Internal (SUPINT, agents only). The page URLs are in `kb/index.csv`. An edit here does not reach JSM by itself: update the Confluence page too.
+
 ---
 
 ### KB-01. How do I book an appointment?
@@ -293,7 +295,7 @@ Raise a **Reschedule or cancel** request with your name, phone number and the da
 - [x] Cancel a test booking through the email link: **Confirm Cancellation**, then **Appointment Cancelled**, then the cancellation email arrives (confirmed by the user, October 14, 2026)
 - [x] Open the same link again and see **Already Cancelled** (confirmed by the user, October 14, 2026)
 - [x] Profile cancel on an iPhone and an Android phone: the pop-up is the browser's own, so its button names may differ from **OK** and **Cancel**. After OK, the row moves to **Past Appointments** (confirmed by the user, October 14, 2026)
-- [ ] Iris cancel asks first (second code check, item 7, deployed October 14, 2026). Tap **Cancel** on a test booking, check the question and the **Yes, cancel it** and **Keep it** buttons match step 4, tap **Keep it** and check the booking is still there, then cancel with **Yes, cancel it** and check the reply matches step 5. Before the fix, one tap cancelled (confirmed by the user, October 14, 2026)
+- [x] Iris cancel asks first (second code check, item 7, deployed October 14, 2026). Tap **Cancel** on a test booking, check the question and the **Yes, cancel it** and **Keep it** buttons match step 4, tap **Keep it** and check the booking is still there, then cancel with **Yes, cancel it** and check the reply matches step 5. Before the fix, one tap cancelled (confirmed by the user, October 14, 2026). Works as the article describes (confirmed by the user, October 15, 2026)
 
 ---
 
