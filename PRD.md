@@ -3,7 +3,7 @@
 **Owner:** Shubham Puri  
 **Written:** October 6, 2026  
 **Status:** Final, ready to build  
-**Time:** about 49 hours in total: about 25 hours for the help desk (Phases 0 to 5), about 20 hours for the PayPal refund desk (Phase 3B), and about 4 hours for the hackathon submission (section 12). Phase 3B is your **PayPal AI Hackathon entry, due Thursday November 12, 2026, 3:00 PM New York time**.
+**Time:** about 49 hours in total: about 25 hours for the help desk (Phases 0 to 5), about 20 hours for the PayPal refund desk (Phase 3B), and about 4 hours for the hackathon submission (section 12). Phase 3B is your **PayPal AI Hackathon entry, due Thursday November 12, 2026, 3:00 PM New York time**. Our target is to submit by **Friday October 30**.
 
 A real help desk for your live Salon Booking Platform, built on Jira Service Management, with a help center, an AI triage helper and a response time dashboard. Alongside it, Phase 3B builds an AI refund desk on PayPal for small businesses, shown on a made-up business, as your hackathon entry.
 
@@ -294,11 +294,11 @@ Goal: when a ticket arrives, the tool suggests a category and priority, spots an
 
 **Done when:** a new ticket gets labels plus an internal note within one run, invalid model output is caught, and `eval_triage.py` prints a real accuracy number.
 
-### Phase 3B. AI refund desk on PayPal, your PayPal AI Hackathon entry (about 20 hours, Oct 19 to Nov 8)
+### Phase 3B. AI refund desk on PayPal, your PayPal AI Hackathon entry (about 20 hours, Oct 19 to 29)
 
 **Hackathon facts (official page and rules, read October 6, 2026).** The full breakdown, with sources, is in `docs/hackathon-rules.md`.
 
-- **Deadline:** Thursday November 12, 2026, 3:00 PM New York time (12:00 PM Pacific). Submit by November 10. Drafts can be edited until the deadline; nothing can change after it.
+- **Deadline:** Thursday November 12, 2026, 3:00 PM New York time (12:00 PM Pacific). Submit by Friday October 30 (moved up from November 10 on October 15), which leaves 12 days of buffer. Drafts can be edited until the deadline; nothing can change after it.
 - **Solo is fine.** Existing projects count if you make meaningful progress during the hackathon (October 1 to November 12). This repo started October 6, so all of it counts. Say so in the submission.
 - **Must use:** at least one PayPal API or product in the free sandbox, plus any AI tool or model. PayPal has to be central, not decoration. Stage one of judging is pass/fail on exactly this.
 - **Must submit:** a text description, a working demo judges can run themselves (setup instructions in the repo or a hosted URL; mockups do not count), a list of the tools used and how, a public open source repo with the license detected and shown at the top of the repo page, and a public YouTube video **under 3 minutes** with no copyrighted music or third-party trademarks.
@@ -465,22 +465,24 @@ After this you can honestly say "real customer tickets" and "support for a live 
 
 ## 9. Timeline
 
-The hackathon deadline sets the order: Phases 0 to 3B come first, and Phases 4 and 5 move to after you submit.
+The hackathon deadline sets the order: Phases 0 to 3B come first, and Phases 4 and 5 move to after you submit. On October 15 the target submission date moved up from November 10 to Friday October 30, so the plan below runs from Phase 1 to submission in 16 days.
 
 | When | Work |
 |---|---|
 | Oct 7, 12:00 PM ET (optional) | Hackathon webinar: APIMatic context plugins |
-| Weekend Oct 10 to 11 | Phase 0 and Phase 1 |
-| Oct 11 to 18 | Phase 2: seed tickets, work about 10 a day |
+| Oct 10 to 14 | Phase 0 and Phase 1 steps 1 to 3 (done) |
 | Oct 12, 10:00 AM ET (optional) | Hackathon webinar: "Build a payments dashboard without building a dashboard" |
+| Thu Oct 15 | Phase 1 steps 4 and 5: publish the articles and fill `kb/index.csv` |
+| Oct 16 to 19 | Phase 2: seed one batch of 10 tickets a day and work it the same day |
 | Weekend Oct 17 to 18 | Phase 3 |
-| Oct 19 to 25 | Phase 3B steps 1 to 6: PayPal setup, Postman, sample payments, policy, sample requests |
-| Oct 26 to Nov 1 | Phase 3B steps 7 and 8: refund desk core and its score |
-| Nov 2 to 8 | Phase 3B steps 9 to 11: request form, review page, and the hosted demo on Render |
-| **Nov 9 to 10** | **Hackathon submission (section 12). Submit by Nov 10** |
+| Oct 19 to 22 | Phase 3B steps 1 to 6: PayPal setup, Postman, sample payments, policy, sample requests |
+| Oct 23 to 26 | Phase 3B steps 7 and 8: refund desk core and its score |
+| Oct 27 to 29 | Phase 3B steps 9 to 11: request form, review page, and the hosted demo on Render |
+| **Oct 29 to 30** | **Hackathon submission (section 12). Submit by Fri Oct 30** |
+| Oct 31 to Nov 12 | Buffer. The draft stays editable until the deadline, so fix anything found after submitting |
 | **Nov 12, 3:00 PM ET** | **Hard deadline. Nothing is accepted after it** |
-| Nov 13 to 22 | Phase 4 and Phase 5 |
-| Nov 12 to Dec 15 | Keep the hosted demo live and funded; check it weekly. Judging runs Dec 1 to 15 |
+| Oct 31 to Nov 22 | Phase 4 and Phase 5 |
+| Oct 30 to Dec 15 | Keep the hosted demo live and funded; check it weekly. Judging runs Dec 1 to 15 |
 | Around Dec 21 | Winners announced |
 | Later | Phase 6, after talking to the owner |
 
@@ -499,7 +501,7 @@ The hackathon deadline sets the order: Phases 0 to 3B come first, and Phases 4 a
 | Sandbox card payments are not enabled on your app | Use the approve link fallback in Phase 3B step 4 (about 20 minutes of clicks for 15 payments) |
 | A seed script reruns and charges twice | Every create and refund call sends a `PayPal-Request-Id`; a retry reuses the same id |
 | The AI proposes a wrong refund | The code guardrails block it first, and the review page shows which check failed |
-| Falling behind before Nov 12 | Cut in this order: review page polish (keep a plain Streamlit table with Approve and Reject), the Reset demo button, the Postman collection, the request form. Never cut the hosted demo, the README or the video |
+| Falling behind before Oct 30 | Cut in this order: review page polish (keep a plain Streamlit table with Approve and Reject), the Reset demo button, the Postman collection, the request form. Never cut the hosted demo, the README or the video. If it is still not ready, use the buffer up to Nov 12 rather than submit a broken demo |
 | Hosted demo goes down or runs out of model credit during judging | Spend limit and weekly checks from Phase 3B step 11; the README's local setup is the backup |
 
 ## 11. API cheat sheet
@@ -536,9 +538,9 @@ PayPal docs: developer.paypal.com (Orders v2, Payments v2, Sandbox testing guide
 
 Atlassian docs: developer.atlassian.com, then Jira Service Management Cloud REST API, and Jira Cloud platform REST API v3.
 
-## 12. Hackathon submission checklist (November 9 to 10)
+## 12. Hackathon submission checklist (October 29 to 30)
 
-**Due Thursday November 12, 2026, 3:00 PM New York time. Aim to submit by November 10.**
+**Due Thursday November 12, 2026, 3:00 PM New York time. Aim to submit by Friday October 30.**
 
 1. **Secret check.** The repo is already public, so run this before every push that adds code, and once more before submitting.
    - Scan the whole history with gitleaks (free, open source, from its GitHub releases page): `gitleaks git .` must report no leaks. A plain text search such as `findstr` also matches every harmless `token()` call, so it is too noisy to trust.

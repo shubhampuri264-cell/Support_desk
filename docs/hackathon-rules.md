@@ -11,7 +11,7 @@ A working summary of the official rules and hackathon pages, read on October 6, 
 | Judging | Tue Dec 1, 2:00 PM to Tue Dec 15, 8:00 AM | 5:00 PM to 11:00 AM |
 | Winners announced | On or around Mon Dec 21, 2:00 PM | 5:00 PM |
 
-- Our internal target is to submit by **Tuesday November 10**.
+- Our internal target is to submit by **Friday October 30** (moved up from November 10 on October 15), which leaves 12 days of buffer before the deadline.
 - Draft submissions can be saved and edited until the deadline. After it, no changes are allowed, except removals the sponsor permits (infringing material or personal information).
 
 ## Organizers
