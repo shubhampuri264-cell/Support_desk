@@ -117,6 +117,8 @@ Each article follows the same shape: a title phrased the way a customer searches
 
 The owner answered on October 7, 2026: the salon charges no cancellation fee (article 4), closes at 7:30 PM Monday to Saturday and 6:00 PM on Sunday (article 8), welcomes walk-ins (article 8), and is happy with the salon's name, address, phone and email appearing in the help center (article 9).
 
+Since October 15, 2026, the help desk does not change bookings. Only the owner can log in to admin, so the articles send customers to self-service (the email link, **My Appointments**, Iris) or to the salon's phone, (718) 255-6940, to confirm, cancel or reschedule. A request in the help center gets answers and steps, never a promise that support will change the booking.
+
 Every label and rule below was checked against the SalonWebsite code at commit `bb7f960` (`origin/main` on October 7, 2026), and the lines changed by the October 14 fixes against `acfbbc9`. Each article ends with a **Live check** list: things the code supports but only the live site, a real inbox or the owner can confirm. Tick each item during the live-site check, fix the article if the site differs, and delete the list before pasting the article into JSM.
 
 Published to the JSM knowledge base on October 15, 2026 (issue #7), with the Live check lists left out: KB-01 to KB-09 in the Confluence space Salon Support (SUP, external), KB-10 in Salon Support Internal (SUPINT, agents only). The page URLs are in `kb/index.csv`. An edit here does not reach JSM by itself: update the Confluence page too.
@@ -149,6 +151,7 @@ Published to the JSM knowledge base on October 15, 2026 (issue #7), with the Liv
 - Online booking takes up to 3 bookings in 24 hours with the same email or phone. A fourth shows **You've reached the daily limit for online bookings.** Booking for a larger family or group? Book the first three online and call (718) 255-6940 for the rest.
 - If you see **This time slot was just taken**, someone booked it a moment before you. Go back and pick another time.
 - You can also book through the chat assistant. See KB-05.
+- You can also call the salon at (718) 255-6940 to confirm, cancel or reschedule a booking.
 
 **If it still does not work**
 
@@ -232,11 +235,11 @@ Iris keeps the same service and stylist. To change the service or stylist, cance
 - Iris offers the next 6 days with free times. For a date further out, use the guest steps above or call.
 - A booking made as a guest stays a guest booking, even if you create an account later with the same email. Iris then says **You haven't got anything booked at the moment.** Use the guest steps above.
 - Booked as a guest and asked Iris to move it? Iris asks you to sign in or use the link in your confirmation email. Use the guest steps above.
-- Changing an appointment for today? Call (718) 255-6940 so the salon knows straight away.
+- You can also call the salon at (718) 255-6940 to confirm, cancel or reschedule a booking. For an appointment today, calling is the quickest way.
 
 **If it still does not work**
 
-Raise a **Reschedule or cancel** request with your name, your booking reference, your current appointment and the time you want instead. Or call (718) 255-6940.
+Call the salon at (718) 255-6940 and they will move it for you. For questions, raise a **Reschedule or cancel** request: we can explain the steps, but only the salon can change a booking.
 
 #### Live check (remove before publishing)
 
@@ -283,11 +286,12 @@ Moved your appointment before? The **Your Icon Studio Appointment Has Moved** em
 - The salon charges no cancellation fee, even within 24 hours of your appointment. The website never takes payment or card details.
 - Please cancel as early as you can. If it is less than 24 hours before your appointment, a quick call to (718) 255-6940 helps the salon fill the slot.
 - **Already Cancelled** means the appointment was cancelled before. Nothing else is needed.
-- Lost the email? If you were signed in when you booked, use **Resend Email** on **My Appointments** (see KB-07). If you booked as a guest, contact us and we will cancel it for you. The reminder email has no cancel link.
+- Lost the email? If you were signed in when you booked, use **Resend Email** on **My Appointments** (see KB-07). If you booked as a guest, call the salon at (718) 255-6940 and they will cancel it for you. The reminder email has no cancel link.
+- You can also call the salon at (718) 255-6940 to confirm, cancel or reschedule a booking.
 
 **If it still does not work**
 
-Raise a **Reschedule or cancel** request with your name, phone number and the date and time of the appointment. Or call (718) 255-6940.
+Call the salon at (718) 255-6940 and they will cancel it for you. For questions, raise a **Reschedule or cancel** request: we can explain the steps, but only the salon can change a booking.
 
 #### Live check (remove before publishing)
 
@@ -379,20 +383,20 @@ Raise a **Chat assistant (Iris) question** request with what you asked and rough
 2. Search your inbox, spam, junk and promotions folders for **Your Icon Studio Appointment is Confirmed!** from Icon Studio (noreply@iconht.studio).
 3. If you were signed in when you booked, open **My Appointments** to see your booking.
 4. Click **Resend Email** on the appointment. The button changes to **Sent ✓**.
-5. Still nothing after 5 minutes? Contact us (below).
+5. Still nothing after 5 minutes? Call the salon at (718) 255-6940 to confirm your booking.
 
 **Good to know**
 
 - Your booking is confirmed once you saw **Booking Confirmed!**. The email is a copy of the details and holds your cancel link.
 - **Resend Email** works once every 5 minutes per appointment, and only a few times an hour from the same device. If a pop-up says **Please wait a few minutes before resending again.**, wait and try later.
-- Booked as a guest? Your booking is not under **My Appointments**, even if you create an account later. Contact us (below).
+- Booked as a guest? Your booking is not under **My Appointments**, even if you create an account later. Call the salon to confirm it.
 - A reminder email, **Reminder: Your Icon Studio Appointment is Tomorrow**, goes out the morning of the day before your appointment. A booking made for today, or for tomorrow after that morning's reminders went out, gets no reminder. Moved your appointment? The reminder comes the day before the new date.
 - The salon does not send text messages.
-- Think you typed your email wrong? Contact us with the right one.
+- Think you typed your email wrong? Call the salon at (718) 255-6940 to confirm your booking.
 
 **If it still does not work**
 
-Raise a **Confirmation email not received** request with your name, phone number, the date and time you booked, your booking reference if you have it, and the email address you meant to use.
+Call the salon at (718) 255-6940. They can confirm your booking, and cancel or reschedule it if you need to. For questions about our emails, raise a **Confirmation email not received** request.
 
 #### Live check (remove before publishing)
 
@@ -426,6 +430,8 @@ You can also tap **Hours & location** in Iris.
 **Good to know**
 
 - The salon is open 7 days a week. Walk-ins are welcome.
+- There is no salon parking. Park at the curb on the street, or in a public parking lot nearby.
+- By subway: the 7 train stops right across the street, at 40 St–Lowery St.
 - Online, a service has to finish by closing time, so the last time you can book depends on how long the service takes. For a later start, call (718) 255-6940.
 
 **If it still does not work**
@@ -436,6 +442,7 @@ For anything else about getting here, raise a **General question** request or ca
 
 - [x] Owner confirmed closing at 7:30 PM Monday to Saturday and 6:00 PM on Sunday (October 7, 2026), matching the table. The home page's "Every day, 10am to 8pm" was fixed on October 14, 2026 (second code check, item 1). The 10:00 AM opening comes from the code; she did not contradict it
 - [x] Owner confirmed walk-ins are welcome (October 7, 2026)
+- [x] Parking and subway lines added October 15, 2026, after SUP-7 asked about parking: curbside or public parking only, and the 7 train right across the street (confirmed by the user). The station name, 40 St–Lowery St at 40th St and Queens Blvd, is from the MTA's 7 line map
 - [x] The address link on the Location page points to the Google Maps place "Icon studios", 39-46 Queens Blvd, Sunnyside (checked October 14, 2026)
 
 ---
@@ -446,11 +453,11 @@ For anything else about getting here, raise a **General question** request or ca
 
 **Ways to reach us**
 
-- **Phone:** (718) 255-6940. Best for anything about today.
+- **Phone:** (718) 255-6940. Best for anything about today, and the way to confirm, cancel or reschedule a booking.
 - **Email:** ks@iconht.studio, also shown at the bottom of every page.
 - **Contact form:** iconht.studio/contact. Replies come by email.
 - **Iris:** ask Iris to pass on a message, or tap **Message the salon** when Iris offers it. Fill in the short form and tap **Send message**. Iris replies **Sent. The salon will come back to you by email.**
-- **This help center:** raise a request and track it here.
+- **This help center:** raise a request and track it here. We answer questions and explain the steps; to change a booking, call the salon.
 
 **Steps for the contact form**
 
