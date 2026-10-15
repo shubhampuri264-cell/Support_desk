@@ -141,6 +141,8 @@ salon-support-desk/
   postman/
     paypal_refund_helper.postman_collection.json   no secrets in it
   reports/
+    agent_notes.md       Phase 2: anything surprising from working the tickets
+    bug_escalations.md   Phase 2: engineering escalation for each bug ticket
   screenshots/
 ```
 
@@ -257,10 +259,10 @@ Each phase ends with a **Done when** check. Do not move on until it passes.
      ```
    - Save the returned issue key (for example `SUP-12`) next to the CSV id.
    - Load in 4 batches of 10 on different days, so the response times measure how you actually worked through them, instead of 40 tickets created in the same minute.
-3. **Work every ticket as the agent in the JSM web UI.** Reply publicly, ask a follow up where the ticket is vague, link the right article, and resolve. For bug tickets, open a GitHub issue in the SalonWebsite repo and link it in an internal note. This is the actual support work and where your interview stories come from.
+3. **Work every ticket as the agent in the JSM web UI.** Reply publicly, ask a follow up where the ticket is vague, link the right article, and resolve. For bug tickets, write the escalation in `reports/bug_escalations.md` (root cause, code references, proposed fix) and link its section in an internal note. These are sample tickets, so the escalations are not filed as issues in the SalonWebsite repo (decided October 15, 2026); a bug that is real in the code can still be filed there by hand. This is the actual support work and where your interview stories come from.
 4. Keep a short log in `reports/agent_notes.md` of anything surprising, such as a missing article or a confusing feature.
 
-**Done when:** all 40 tickets are resolved, at least 20 replies link an article, and every bug ticket links a GitHub issue.
+**Done when:** all 40 tickets are resolved, at least 20 replies link an article, and every bug ticket links its escalation in `reports/bug_escalations.md`.
 
 ### Phase 3. AI triage helper (about 6 hours)
 

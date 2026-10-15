@@ -1,0 +1,11 @@
+csv_id,issue_key,customer_email,account_id,created_at
+1,SUP-1,maria.lopez@example.com,qm:32177135-af0e-44b4-b53b-7a60ae5a2702:c3880651-1f17-4cca-a93f-87a2d44cb670,2026-10-15T20:06:55+00:00
+2,SUP-2,james.carter@example.com,qm:32177135-af0e-44b4-b53b-7a60ae5a2702:606d51fa-9c66-4881-8856-3a3bc2b3113c,2026-10-15T20:07:31+00:00
+3,SUP-3,priya.nair@example.com,qm:32177135-af0e-44b4-b53b-7a60ae5a2702:16e30167-6272-43c3-aa50-5c63e405b206,2026-10-15T20:08:30+00:00
+4,SUP-4,daniel.kim@example.com,qm:32177135-af0e-44b4-b53b-7a60ae5a2702:107f04bf-1198-40b6-abdd-90196128e29f,2026-10-15T20:08:38+00:00
+5,SUP-5,aisha.bello@example.com,qm:32177135-af0e-44b4-b53b-7a60ae5a2702:5c3e7207-1248-499c-aa51-2e36e09d7ec8,2026-10-15T20:09:08+00:00
+6,SUP-6,tom.becker@example.com,qm:32177135-af0e-44b4-b53b-7a60ae5a2702:e3403ab0-bbc4-43bf-800b-88eddb343533,2026-10-15T20:09:16+00:00
+7,SUP-7,grace.liu@example.com,qm:32177135-af0e-44b4-b53b-7a60ae5a2702:282755d9-420b-4d60-95af-7c3c01d3353a,2026-10-15T20:09:21+00:00
+8,SUP-8,olivia.brooks@example.com,qm:32177135-af0e-44b4-b53b-7a60ae5a2702:bfa9a40b-ed76-4aee-b692-0a023553eb50,2026-10-15T20:09:52+00:00
+9,SUP-9,rosa.martinez@example.com,qm:32177135-af0e-44b4-b53b-7a60ae5a2702:f48d754f-9f8c-4f8a-906e-632a76ecc776,2026-10-15T20:10:11+00:00
+10,SUP-10,kevin.patel@example.com,qm:32177135-af0e-44b4-b53b-7a60ae5a2702:ee351f1d-7d6a-4ffb-ad17-02b256ae8284,2026-10-15T20:10:18+00:00
